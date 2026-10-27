@@ -192,7 +192,7 @@ h3{font-family:var(--display);margin:0 0 12px}
   animation: simpleFadeUp 0.3s ease-out backwards;
   margin-bottom: 5px;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
-  user-select: none; /* Verhindert das blaue Markieren von Text */
+  user-select: none;
 }
 
 .team-type-odd .row { background: rgba(45, 12, 12, 0.7); border-color: rgba(90, 25, 25, 0.8); }
@@ -200,8 +200,12 @@ h3{font-family:var(--display);margin:0 0 12px}
 
 .row.selectable { cursor: pointer; }
 .row.selectable:hover { border-color: var(--gold); }
-.row.selectable:active { transform: scale(0.97); } /* Haptischer Klick-Effekt */
+.row.selectable:active { transform: scale(0.97); }
 .row.selected { border-color: var(--gold); background: rgba(255, 209, 102, 0.15) !important; }
+
+.row.stealable { cursor: pointer; border-color: rgba(255, 209, 102, 0.5); }
+.row.stealable:hover { border-color: var(--gold); background: rgba(255, 209, 102, 0.08) !important; }
+.row.stealable:active { transform: scale(0.97); }
 
 .row.eliminated { opacity: 0.5; filter: grayscale(80%); background: rgba(0,0,0,0.3) !important; }
 .row.eliminated .meta b { text-decoration: line-through; color: var(--muted); }
@@ -211,7 +215,6 @@ h3{font-family:var(--display);margin:0 0 12px}
   border-color: var(--green) !important; 
 }
 
-/* 3 Sekunden Animation für das Highlight nach dem Speichern */
 @keyframes highlightPulse {
   0% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
   25% { transform: scale(1.03); box-shadow: 0 0 18px var(--gold); border-color: var(--gold); }
@@ -222,7 +225,7 @@ h3{font-family:var(--display);margin:0 0 12px}
   animation: highlightPulse 3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.row-content{ display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; width:100%; pointer-events: none; }
+.row-content{ display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; width:100%; }
 .meta{ display:flex; align-items: center; justify-content: center; gap: 6px; text-align: center; width: 100%; }
 .meta b{font-size:1.1rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.2;}
 
@@ -306,7 +309,6 @@ dialog input,dialog select{width:100%}
 
 .header-actions { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
 
-/* Animierte Ergebnis-Karten im Popup */
 @keyframes resultCardPop {
   0% { opacity: 0; transform: scale(0.8) translateY(15px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
@@ -352,7 +354,8 @@ var ui = {
   editMode: false,
   selectedTalents: [],
   mode: "fake",
-  highlightTalentIds: []
+  highlightTalentIds: [],
+  stealModeActive: false
 };
 
 var $ = function(s) { return document.querySelector(s); };
@@ -592,6 +595,7 @@ function render() {
   if (ui.view === "home") {
     ui.editMode = false;
     ui.selectedTalents = [];
+    ui.stealModeActive = false;
     $("#header_tools").innerHTML = '';
     $("#app").innerHTML = homeView();
     if (floatingContainer) floatingContainer.innerHTML = '';
@@ -600,18 +604,24 @@ function render() {
     if (!ui.tab && cs.stages.length > 0) ui.tab = cs.stages[0].id;
     
     var editBtnClass = ui.editMode ? "primary" : "ghost";
-    var stealHeaderBtn = currentStageIdx > 0 ? '<button class="ghost" data-act="openStealModal" style="border-color:var(--gold); color:var(--gold);">🔄 Steal-Deal</button>' : '';
+    var stealBtnClass = ui.stealModeActive ? "primary" : "ghost";
+    var stealHeaderBtn = currentStageIdx > 0 ? '<button class="'+stealBtnClass+'" data-act="toggleStealMode" style="border-color:var(--gold); color:'+(ui.stealModeActive?'#fff':'var(--gold)' )+';">🔄 Steal-Deal ' + (ui.stealModeActive ? '(Aktiv - Wähle Raus-Talent)' : '') + '</button>' : '';
     
     $("#header_tools").innerHTML = stealHeaderBtn +
                                    '<button class="'+editBtnClass+'" data-act="toggleEditMode">✏️ Edit Mode</button>' +
                                    '<button class="ghost" data-act="openSettings" style="border-color:var(--line)">⚙️ Einstellungen</button>';
     $("#app").innerHTML = seasonView(cs);
 
-    if (currentStageIdx > 0 && ui.selectedTalents.length > 0) {
+    if (currentStageIdx > 0 && ui.selectedTalents.length > 0 && !ui.stealModeActive) {
       floatingContainer.innerHTML = '<div class="floating-popup">' +
                 '<span style="background:var(--panel); border:1px solid var(--line); padding:8px 14px; border-radius:8px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
                 '<button class="ghost sm" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
                 '<button class="primary sm" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
+              '</div>';
+    } else if (ui.stealModeActive) {
+      floatingContainer.innerHTML = '<div class="floating-popup" style="background:var(--panel); border:1px solid var(--gold); padding:10px 16px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.5);">' +
+                '<span style="color:var(--gold); font-weight:700; font-size:0.95rem;">🔄 Klicke auf ein ausgeschiedenes Talent, um den Steal-Deal zu starten!</span>' +
+                '<button class="ghost sm" style="background:var(--panel2); border-color:var(--line);" data-act="toggleStealMode">Abbrechen</button>' +
               '</div>';
     } else {
       if (floatingContainer) floatingContainer.innerHTML = '';
@@ -750,10 +760,26 @@ function seasonView(cs) {
           statusClass += ' recently-updated';
         }
 
-        var isSelectable = currentStageIdx > 0;
+        var isSelectable = currentStageIdx > 0 && !ui.editMode;
         var isSelected = ui.selectedTalents.includes(t.id);
-        if (isSelectable) statusClass += ' selectable';
-        if (isSelected) statusClass += ' selected';
+        
+        var rowActionAttr = '';
+        if (ui.editMode) {
+          // Im Edit-Mode ist die Zeile nicht klickbar, damit Buttons funktionieren
+          rowActionAttr = '';
+        } else if (ui.stealModeActive) {
+          if (t.status === 'eliminated') {
+            statusClass += ' stealable';
+            rowActionAttr = 'data-act="triggerStealTalent" data-id="'+t.id+'"';
+          } else {
+            statusClass += ' eliminated';
+            rowActionAttr = '';
+          }
+        } else if (isSelectable) {
+          statusClass += ' selectable';
+          if (isSelected) statusClass += ' selected';
+          rowActionAttr = 'data-act="toggleSelectTalent" data-id="'+t.id+'"';
+        }
 
         var editButtonsHtml = '';
         if (ui.editMode) {
@@ -762,8 +788,6 @@ function seasonView(cs) {
                               '<button class="ghost sm danger" data-act="delTalent" data-id="'+t.id+'">Löschen</button>' +
                             '</div>';
         }
-
-        var rowActionAttr = isSelectable ? 'data-act="toggleSelectTalent" data-id="'+t.id+'"' : '';
 
         talentsHtml += 
           '<div class="row ' + statusClass + '" id="row_talent_' + t.id + '" ' + rowActionAttr + '>' +
@@ -841,12 +865,33 @@ function seasonView(cs) {
           statusClass += ' recently-updated';
         }
 
-        var isSelectable = currentStageIdx > 0;
+        var isSelectable = currentStageIdx > 0 && !ui.editMode;
         var isSelected = ui.selectedTalents.includes(t.id);
-        if (isSelectable) statusClass += ' selectable';
-        if (isSelected) statusClass += ' selected';
+        
+        var rowActionAttr = '';
+        if (ui.editMode) {
+          rowActionAttr = '';
+        } else if (ui.stealModeActive) {
+          if (t.status === 'eliminated') {
+            statusClass += ' stealable';
+            rowActionAttr = 'data-act="triggerStealTalent" data-id="'+t.id+'"';
+          } else {
+            statusClass += ' eliminated';
+            rowActionAttr = '';
+          }
+        } else if (isSelectable) {
+          statusClass += ' selectable';
+          if (isSelected) statusClass += ' selected';
+          rowActionAttr = 'data-act="toggleSelectTalent" data-id="'+t.id+'"';
+        }
 
-        var rowActionAttr = isSelectable ? 'data-act="toggleSelectTalent" data-id="'+t.id+'"' : '';
+        var editButtonsHtml = '';
+        if (ui.editMode) {
+          editButtonsHtml = '<div style="display:flex;gap:4px;margin-top:2px;justify-content:center;">' +
+                              '<button class="ghost sm" data-act="editTalent" data-id="'+t.id+'">✏️ Edit</button>' +
+                              '<button class="ghost sm danger" data-act="delTalent" data-id="'+t.id+'">Löschen</button>' +
+                            '</div>';
+        }
 
         talentsHtml += 
           '<div class="row ' + statusClass + '" id="row_talent_' + t.id + '" ' + rowActionAttr + '>' +
@@ -855,6 +900,7 @@ function seasonView(cs) {
               '<div class="meta">' +
                 allStarStar + '<b>' + esc(t.name) + '</b>' + stealBadge +
               '</div>' +
+              editButtonsHtml +
             '</div>' +
             '<div>' + fakeTeamBadge + '</div>' +
           '</div>';
@@ -1096,48 +1142,51 @@ function openTalentModal(teamId, editId) {
   if (!dlg.open) dlg.showModal();
 }
 
-function openStealModal() {
+function openStealPopupForTalent(talentId) {
   var cs = currentSeason();
   if (!cs) return;
 
-  var stageTalents = cs.talents.filter(function(t){ return t.stageId === ui.tab; });
-  var eliminatedTalents = stageTalents.filter(function(t){ return t.status === 'eliminated'; });
+  var t = cs.talents.find(function(x){ return x.id === talentId; });
+  if (!t) return;
 
-  if (eliminatedTalents.length === 0) {
-    showCustomAlert("Es sind aktuell keine ausgeschiedenen Talente in diesem Abschnitt vorhanden, die geklaut werden könnten.");
-    return;
-  }
+  var currentRealId = t.realTeamId || "";
+  var currentTeamId = t.teamId || "";
 
-  var talentOpts = '';
-  for (var i = 0; i < eliminatedTalents.length; i++) {
-    var et = eliminatedTalents[i];
-    var tObj = cs.teams.find(function(m){ return m.id === et.teamId; }) || {};
-    talentOpts += '<option value="'+et.id+'">' + esc(et.name) + ' (bisher: ' + esc(tObj.name || '') + ')</option>';
-  }
-
-  var realTeamOpts = '';
+  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;" id="steal_real_btn_group">';
   if (cs.realTeams) {
-    for(var i=0; i<cs.realTeams.length; i++){
+    for(var i = 0; i < cs.realTeams.length; i++) {
       var rt = cs.realTeams[i];
-      realTeamOpts += '<option value="'+rt.id+'">'+esc(rt.name)+' ('+esc(rt.initial)+')</option>';
+      var isSelected = currentRealId === rt.id;
+      realButtonsHtml += '<button type="button" class="steal-rt-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:100px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
     }
   }
+  realButtonsHtml += '</div>';
 
-  var teamOpts = '';
+  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;" id="steal_fake_btn_group">';
   var activeTeams = cs.teams.slice(0, cs.teamCount);
-  for(var i=0; i<activeTeams.length; i++){
+  for(var i = 0; i < activeTeams.length; i++) {
     var tm = activeTeams[i];
-    teamOpts += '<option value="'+tm.id+'">'+esc(tm.name)+'</option>';
+    var isSelectedF = currentTeamId === tm.id;
+    fakeTeamButtonsHtml += '<button type="button" class="steal-fk-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:90px; font-weight:700;">' + esc(tm.name) + '</button>';
   }
+  fakeTeamButtonsHtml += '</div>';
 
-  dlg.innerHTML = '<h3>🔄 Steal-Deal durchführen</h3>' +
-    '<p class="hint">Wähle ein ausgeschiedenes Talent und weise es einem neuen Coach / Fake-Team zu.</p>' +
-    '<label>Ausgeschiedenes Talent<select id="steal_talent_sel">' + talentOpts + '</select></label>' +
-    '<label>Neuer Realer Coach / Team<select id="steal_real">' + realTeamOpts + '</select></label>' +
-    '<label>Neues Fake-Team<select id="steal_team">' + teamOpts + '</select></label>' +
+  dlg.innerHTML = '<h3>🔄 Steal-Deal für: <span style="color:var(--gold);">' + esc(t.name) + '</span></h3>' +
+    '<p class="hint">Weise das ausgeschiedene Talent direkt einem neuen Coach (Reales Team) und einem neuen Fake-Team zu.</p>' +
+    
+    '<label style="margin-bottom:4px; font-weight:700; color:var(--ink);">Neues Reales Team / Coach wählen</label>' +
+    realButtonsHtml +
+    '<input type="hidden" id="steal_real_val" value="' + esc(currentRealId) + '">' +
+
+    '<label style="margin-bottom:4px; font-weight:700; color:var(--ink);">Neues Fake-Team wählen</label>' +
+    fakeTeamButtonsHtml +
+    '<input type="hidden" id="steal_team_val" value="' + esc(currentTeamId) + '">' +
+
+    '<input type="hidden" id="steal_target_talent_id" value="' + esc(t.id) + '">' +
+
     '<div class="actions" style="margin-top:20px; justify-content:flex-end;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
-      '<button class="primary" data-act="saveSteal">Steal bestätigen</button>' +
+      '<button class="primary" data-act="saveStealDirect">✨ Steal bestätigen & Show-Weiterflug</button>' +
     '</div>';
 
   if (!dlg.open) dlg.showModal();
@@ -1163,8 +1212,16 @@ function openBattleModal() {
     var isAdv = status === 'advanced';
     var isElim = status === 'eliminated';
 
-    listHtml += '<div style="background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:12px;" id="battle_item_' + t.id + '">' +
-                  '<div style="margin-bottom:4px; font-weight:800; font-size:1.1rem; color:var(--ink);">' + allStarStar + esc(t.name) + '</div>' +
+    var buzzerBadgePopup = '';
+    if (cs.teamCount && t.buzzers === cs.teamCount) {
+      buzzerBadgePopup = '<span class="ace-symbol" title="Alle ' + cs.teamCount + ' Buzzer (Pik As)" style="font-size:1.3rem;">♠</span>';
+    } else {
+      buzzerBadgePopup = '<span class="badge-box" title="Buzzer" style="font-size:0.85rem; min-width:22px; height:22px;">' + esc(t.buzzers) + '</span>';
+    }
+
+    listHtml += '<div style="position:relative; background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:12px;" id="battle_item_' + t.id + '">' +
+                  '<div style="position:absolute; top:12px; right:12px;">' + buzzerBadgePopup + '</div>' +
+                  '<div style="margin-bottom:4px; font-weight:800; font-size:1.1rem; color:var(--ink); padding-right:32px;">' + allStarStar + esc(t.name) + '</div>' +
                   '<div style="margin-bottom:10px; font-size:0.85rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap;">' +
                     '<span>🎭 ' + esc(fakeTeamInfo) + '</span>' +
                     '<span>🎤 ' + esc(realTeamInfo) + '</span>' +
@@ -1231,16 +1288,17 @@ function openCoachStatsModal() {
 
 // ---- Actions ----
 var A = {
-  goHome: function() { ui.view = "home"; ui.seasonId = null; ui.selectedTalents = []; ui.enter = true; return "render"; },
-  openSeason: function(el) { ui.seasonId = el.dataset.id; ui.view = "season"; ui.tab = null; ui.selectedTalents = []; ui.enter = true; return "render"; },
+  goHome: function() { ui.view = "home"; ui.seasonId = null; ui.selectedTalents = []; ui.stealModeActive = false; ui.enter = true; return "render"; },
+  openSeason: function(el) { ui.seasonId = el.dataset.id; ui.view = "season"; ui.tab = null; ui.selectedTalents = []; ui.stealModeActive = false; ui.enter = true; return "render"; },
   closeDlg: function() { dlg.close(); return "keep"; },
-  setTab: function(el) { ui.tab = el.dataset.id; ui.selectedTalents = []; ui.enter = true; },
+  setTab: function(el) { ui.tab = el.dataset.id; ui.selectedTalents = []; ui.stealModeActive = false; ui.enter = true; },
   setViewMode: function(el) { ui.mode = el.dataset.mode; ui.enter = true; },
   toggleEditMode: function() { ui.editMode = !ui.editMode; ui.enter = true; },
+  toggleStealMode: function() { ui.stealModeActive = !ui.stealModeActive; ui.selectedTalents = []; ui.enter = true; },
   clearSelection: function() { ui.selectedTalents = []; ui.enter = true; return "render"; },
 
-  // FLÜSSIGE AUSWAHL OHNE FLACKERN / NEULADEN
   toggleSelectTalent: function(el) {
+    if (ui.editMode) return "keep";
     var id = el.dataset.id;
     var idx = ui.selectedTalents.indexOf(id);
     if (idx > -1) {
@@ -1251,7 +1309,6 @@ var A = {
       el.classList.add("selected");
     }
     
-    // Floating-Popup dynamisch aktualisieren ohne komplettes Neu-Rendern der Seite
     var floatingContainer = $("#floating_popup_container");
     if (ui.selectedTalents.length > 0) {
       floatingContainer.innerHTML = '<div class="floating-popup">' +
@@ -1265,24 +1322,36 @@ var A = {
     return "keep";
   },
 
-  openBattleModal: function() { openBattleModal(); return "keep"; },
-  openCoachStatsModal: function() { openCoachStatsModal(); return "keep"; },
-  openStealModal: function() { openStealModal(); return "keep"; },
+  triggerStealTalent: function(el) {
+    if (ui.editMode) return "keep";
+    var id = el.dataset.id;
+    openStealPopupForTalent(id);
+    return "keep";
+  },
 
-  saveSteal: function() {
+  saveStealDirect: function() {
     var cs = currentSeason();
     if (!cs) return "keep";
-    var talentIdSel = $("#steal_talent_sel");
-    if (!talentIdSel) return "keep";
 
-    var talentId = talentIdSel.value;
-    var newRealId = $("#steal_real").value;
-    var newTeamId = $("#steal_team").value;
+    var talentId = $("#steal_target_talent_id").value;
+    var newRealId = $("#steal_real_val").value;
+    var newTeamId = $("#steal_team_val").value;
 
     var t = cs.talents.find(function(x){ return x.id === talentId; });
     if (!t) return "keep";
 
-    t.status = "eliminated";
+    var targetName = t.name.toLowerCase();
+
+    for (var i = 0; i < cs.talents.length; i++) {
+      var item = cs.talents[i];
+      if (item.name.toLowerCase() === targetName) {
+        item.teamId = newTeamId;
+        item.realTeamId = newRealId;
+        if (item.stageId === ui.tab) {
+          item.status = "eliminated";
+        }
+      }
+    }
 
     var currentStageIdx = cs.stages.findIndex(function(st){ return st.id === ui.tab; });
     var nextStage = (currentStageIdx !== -1 && currentStageIdx < cs.stages.length - 1) ? cs.stages[currentStageIdx + 1] : null;
@@ -1302,7 +1371,7 @@ var A = {
 
     if (nextStage) {
       var exists = cs.talents.some(function(existing){
-        return existing.stageId === nextStage.id && existing.name.toLowerCase() === t.name.toLowerCase();
+        return existing.stageId === nextStage.id && existing.name.toLowerCase() === targetName;
       });
       if (!exists) {
         cs.talents.push({
@@ -1318,7 +1387,7 @@ var A = {
         });
       } else {
         var existingTalent = cs.talents.find(function(existing){
-          return existing.stageId === nextStage.id && existing.name.toLowerCase() === t.name.toLowerCase();
+          return existing.stageId === nextStage.id && existing.name.toLowerCase() === targetName;
         });
         if(existingTalent) {
           existingTalent.teamId = newTeamId;
@@ -1328,8 +1397,38 @@ var A = {
       }
     }
 
-    save(); dlg.close(); ui.enter = true; render();
+    ui.stealModeActive = false;
+    ui.highlightTalentIds = [stealTalentId];
+    save();
+
+    var realTeamObj = cs.realTeams ? cs.realTeams.find(function(rt){ return rt.id === newRealId; }) : null;
+    var fakeTeamObj = cs.teams.find(function(tm){ return tm.id === newTeamId; }) || {};
+
+    dlg.innerHTML = '<div style="text-align:center; padding:10px 0;">' +
+                      '<h3 style="color:var(--gold); font-size:1.4rem; margin-bottom:6px;">🔄 Steal-Deal erfolgreich!</h3>' +
+                      '<p class="hint"><b>' + esc(t.name) + '</b> wurde erfolgreich gerettet & global aktualisiert:</p>' +
+                      '<div class="anim-result-card" style="background:var(--panel2); border:1px solid var(--gold); border-radius:10px; padding:14px; margin-top:12px; text-align:left;">' +
+                        '<div style="font-weight:800; font-size:1.1rem; color:var(--ink); margin-bottom:4px;">⭐ ' + esc(t.name) + '</div>' +
+                        '<div style="font-size:0.9rem; color:var(--muted);">🎭 Neues Fake-Team: <b>' + esc(fakeTeamObj.name || '') + '</b></div>' +
+                        '<div style="font-size:0.9rem; color:var(--muted);">🎤 Neuer Coach: <b style="color:' + (realTeamObj ? realTeamObj.color : 'var(--gold)') + ';">' + esc(realTeamObj ? realTeamObj.name : 'Kein Coach') + '</b></div>' +
+                      '</div>' +
+                    '</div>';
+
+    setTimeout(function(){
+      dlg.close();
+      ui.enter = true;
+      render();
+      setTimeout(function(){
+        ui.highlightTalentIds = [];
+      }, 3200);
+    }, 1800);
+
+    return "keep";
   },
+
+  openBattleModal: function() { openBattleModal(); return "keep"; },
+  openCoachStatsModal: function() { openCoachStatsModal(); return "keep"; },
+  openStealModal: function() { openStealModal(); return "keep"; },
 
   exportJSON: function() {
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(S, null, 2));
@@ -1419,7 +1518,6 @@ var A = {
       dlg.close();
       ui.enter = true;
       render();
-      // Highlight nach 3.2 Sekunden wieder entfernen (passend zur 3s CSS-Animation)
       setTimeout(function(){
         ui.highlightTalentIds = [];
       }, 3200);
@@ -1502,8 +1600,15 @@ var A = {
   delTalent: function(el) {
     var cs = currentSeason();
     var talentId = el.dataset.id;
-    showCustomConfirm("Talent wirklich löschen?", function(){
-      cs.talents = cs.talents.filter(function(t){ return t.id !== talentId; });
+    var targetTalent = cs.talents.find(function(x){ return x.id === talentId; });
+    
+    showCustomConfirm("Talent wirklich löschen? (Wird global in allen Abschnitten entfernt)", function(){
+      if (targetTalent) {
+        var targetName = targetTalent.name.toLowerCase();
+        cs.talents = cs.talents.filter(function(t){ return t.name.toLowerCase() !== targetName; });
+      } else {
+        cs.talents = cs.talents.filter(function(t){ return t.id !== talentId; });
+      }
       ui.selectedTalents = ui.selectedTalents.filter(function(id){ return id !== talentId; });
       save(); render();
     });
@@ -1524,11 +1629,17 @@ var A = {
     if (ui.editTalent) {
       var t = cs.talents.find(function(x){ return x.id === ui.editTalent; });
       if(t) {
-        t.name = name; 
-        t.teamId = teamId; 
-        t.buzzers = buzzers;
-        t.realTeamId = realTeamId;
-        t.isAllStar = isAllStar;
+        var oldName = t.name.toLowerCase();
+        for (var i = 0; i < cs.talents.length; i++) {
+          var item = cs.talents[i];
+          if (item.id === ui.editTalent || item.name.toLowerCase() === oldName) {
+            item.name = name;
+            item.teamId = teamId;
+            item.buzzers = buzzers;
+            item.realTeamId = realTeamId;
+            item.isAllStar = isAllStar;
+          }
+        }
       }
     } else {
       var baseId = "tal_" + Date.now();
@@ -1605,7 +1716,28 @@ document.addEventListener("click", function(ev){
     if (valInpB) valInpB.value = bzBtn.dataset.buzz;
   }
 
-  // Klicks für die Status-Buttons im Battle-Modus (mit Toggle auf 'active' beim erneuten Klick)
+  var stealRtBtn = ev.target.closest(".steal-rt-btn");
+  if (stealRtBtn) {
+    var sGroupRt = document.querySelectorAll(".steal-rt-btn");
+    for (var i = 0; i < sGroupRt.length; i++) {
+      sGroupRt[i].className = "ghost steal-rt-btn";
+    }
+    stealRtBtn.className = "primary steal-rt-btn";
+    var stealRealVal = $("#steal_real_val");
+    if (stealRealVal) stealRealVal.value = stealRtBtn.dataset.realid;
+  }
+
+  var stealFkBtn = ev.target.closest(".steal-fk-btn");
+  if (stealFkBtn) {
+    var sGroupFk = document.querySelectorAll(".steal-fk-btn");
+    for (var i = 0; i < sGroupFk.length; i++) {
+      sGroupFk[i].className = "ghost steal-fk-btn";
+    }
+    stealFkBtn.className = "primary steal-fk-btn";
+    var stealTeamVal = $("#steal_team_val");
+    if (stealTeamVal) stealTeamVal.value = stealFkBtn.dataset.teamid;
+  }
+
   var statusBtn = ev.target.closest(".status-btn");
   if (statusBtn) {
     var talId = statusBtn.dataset.talid;
