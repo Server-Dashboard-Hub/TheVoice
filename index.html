@@ -19,8 +19,8 @@
 html{background:var(--bg)}
 body{
   margin:0;font-family:var(--body);color:var(--ink);background:
-  radial-gradient(900px 420px at 50% -10%,rgba(230,42,42,.15),transparent 60%),
-  radial-gradient(700px 380px at 10% 20%,rgba(255,209,102,.08),transparent 60%),var(--bg);
+  radial-gradient(900px 420px at 50% -10%,rgba(230,42,42,.18),transparent 60%),
+  radial-gradient(700px 380px at 10% 20%,rgba(255,209,102,.1),transparent 60%),var(--bg);
   min-height:100vh;line-height:1.42; overflow-x:hidden;
   position: relative;
 }
@@ -32,91 +32,116 @@ body::before {
   pointer-events: none;
   z-index: -1;
   background: 
-    radial-gradient(900px 420px at 30% 10%, rgba(230,42,42,.12), transparent 60%),
-    radial-gradient(800px 400px at 80% 70%, rgba(255,209,102,.05), transparent 60%);
-  animation: bgFloat 14s ease-in-out infinite alternate;
+    radial-gradient(900px 420px at 30% 10%, rgba(230,42,42,.14), transparent 60%),
+    radial-gradient(800px 400px at 80% 70%, rgba(255,209,102,.07), transparent 60%);
+  animation: bgFloat 18s ease-in-out infinite alternate;
 }
 @keyframes bgFloat {
   0% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-25px) scale(1.04); }
-  100% { transform: translateY(20px) scale(0.97); }
+  50% { transform: translateY(-30px) scale(1.05); }
+  100% { transform: translateY(25px) scale(0.96); }
 }
 
-#app { transition: opacity 0.3s ease; }
-#app.enter { animation: popIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+/* Smootherer, längerer Seitenübergang */
+#app { transition: opacity 0.5s ease; }
+#app.enter { animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes popIn {
-  0% { opacity: 0; transform: translateY(10px) scale(0.99); }
+  0% { opacity: 0; transform: translateY(20px) scale(0.96); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .wrap{max-width:100%;margin:0 auto;padding:0 16px 80px}
 header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 8px;border-bottom:1px solid var(--line)}
-.brand{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:.01em; color:var(--red); cursor:pointer;}
+.brand{
+  font-family:var(--display);font-weight:800;font-size:1.2rem;letter-spacing:.02em; color:var(--red); cursor:pointer;
+  text-shadow: 0 0 20px rgba(230, 42, 42, 0.4);
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+.brand:hover { transform: scale(1.03); text-shadow: 0 0 25px rgba(230, 42, 42, 0.7); }
 .who{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.9rem}
 .net{font-size:.8rem}
 
-select,input{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 10px;max-width:100%; transition: border-color 0.2s ease;}
-select:focus,input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+select,input{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:100%; transition: all 0.3s ease;}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-color:var(--gold); box-shadow: 0 0 12px rgba(255,209,102,0.35);}
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
 
 button{
-  font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:6px 12px;
-  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease,filter .2s ease,background-color .2s ease,opacity .2s ease,border-color .2s ease;
+  font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:8px 16px; font-weight: 600;
+  transition:transform .3s cubic-bezier(0.16, 1, 0.3, 1),box-shadow .3s ease,filter .3s ease,background-color .3s ease,opacity .3s ease,border-color .3s ease;
 }
-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 12px rgba(230,42,42,.25)}
-button:active:not(:disabled){transform:scale(.92);box-shadow:none}
+button:hover:not(:disabled){transform:translateY(-2.5px);box-shadow:0 8px 20px rgba(230,42,42,0.25); border-color: rgba(230,42,42,0.5);}
+button:active:not(:disabled){transform:scale(0.92);box-shadow:none}
 
-button.primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+button.primary{
+  background: linear-gradient(135deg, #ff4d4d, #e62a2a);
+  border-color: var(--red); color:#fff; font-weight:700;
+  box-shadow: 0 6px 18px rgba(230, 42, 42, 0.4);
+}
+button.primary:hover:not(:disabled) {
+  box-shadow: 0 8px 25px rgba(230, 42, 42, 0.6);
+}
 button.ghost{background:transparent}
 button.danger{color:#ffb3b3}
 button:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 
 .hero{
   font-family:var(--display);font-weight:800;font-size:clamp(2rem,4vw,3.2rem);line-height:1.05;margin:20px 8px 12px;letter-spacing:-.02em;
-  background:linear-gradient(135deg, #ff4d4d 0%, #e62a2a 100%);
+  background:linear-gradient(135deg, #ff6b6b 0%, #ff3838 50%, #ffd166 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  filter: drop-shadow(0 4px 15px rgba(230, 42, 42, 0.25));
 }
 
 h2{font-family:var(--display);font-size:1.4rem;margin:0}
 h3{font-family:var(--display);margin:0 0 8px}
 .hint{color:var(--muted);margin:0 0 12px;font-size:.85rem}
 
-/* Etwas schmalere Spalten (minmax 240px) für größeren Abstand dazwischen, bleiben auf einer Höhe */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px, 1fr));gap:22px;margin-top:16px; align-items:start;}
 
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px; box-shadow: 0 6px 20px rgba(0,0,0,0.3);}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(230,42,42,0.2);
+  border-color: rgba(230,42,42,0.45);
+}
 .card.team-type-odd { background: linear-gradient(140deg, rgba(28, 8, 8, 0.95), rgba(16, 4, 4, 0.95)); border-color: rgba(230, 42, 42, 0.45); }
 .card.team-type-even { background: linear-gradient(140deg, rgba(36, 12, 10, 0.95), rgba(20, 6, 5, 0.95)); border-color: rgba(255, 107, 107, 0.35); }
 
-.season-card { cursor:pointer; display:flex; flex-direction:column; gap:6px; padding:20px; min-height:120px; justify-content:center; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease;}
-.season-card:hover { transform:translateY(-4px); box-shadow:0 10px 20px rgba(0,0,0,0.4); border-color:var(--red); }
+.season-card { cursor:pointer; display:flex; flex-direction:column; gap:6px; padding:22px; min-height:130px; justify-content:center; }
+.season-card:hover { transform:translateY(-6px) scale(1.01); box-shadow:0 16px 32px rgba(230,42,42,0.3); border-color:var(--red); }
 .season-card:active { transform:scale(0.96); }
-.season-card .s-title { font-family:var(--display); font-size:1.6rem; font-weight:800; color:var(--ink); line-height:1.1; }
+.season-card .s-title { font-family:var(--display); font-size:1.7rem; font-weight:800; color:var(--ink); line-height:1.1; }
 .season-card .s-meta { color:var(--muted); font-size:0.9rem; }
-.season-card .s-winner { margin-top:6px; display:inline-block; padding:3px 8px; background:rgba(255,209,102,0.1); color:var(--gold); border:1px solid rgba(255,209,102,0.3); border-radius:6px; font-weight:700; font-size:0.8rem;}
+.season-card .s-winner { margin-top:6px; display:inline-block; padding:3px 10px; background:rgba(255,209,102,0.12); color:var(--gold); border:1px solid rgba(255,209,102,0.35); border-radius:6px; font-weight:700; font-size:0.8rem;}
 
 .team-header { 
   position: relative;
-  padding-bottom: 6px; 
+  padding-bottom: 8px; 
   border-bottom: 1px solid var(--line); 
-  margin-bottom: 8px; 
+  margin-bottom: 10px; 
   display: flex; 
   align-items: center;
   justify-content: center;
-  min-height: 28px;
+  min-height: 36px;
 }
-.team-header h3 { margin: 0; font-size: 1.1rem; color: var(--gold); text-align: center; }
+.team-header h3 { 
+  margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--gold); text-align: center; letter-spacing: -0.01em; 
+  text-shadow: 0 0 15px rgba(255,209,102,0.25);
+}
 .team-header .add-btn-left {
   position: absolute;
   left: 0;
   opacity: 0;
-  transition: opacity 0.2s ease;
-  padding: 2px 5px;
-  font-size: 0.75rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  padding: 4px 8px;
+  font-size: 0.85rem;
 }
 .card:hover .team-header .add-btn-left {
   opacity: 1;
@@ -127,7 +152,7 @@ h3{font-family:var(--display);margin:0 0 8px}
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -141,31 +166,38 @@ h3{font-family:var(--display);margin:0 0 8px}
   border-bottom: 1px solid var(--line);
   padding-bottom: 8px;
 }
-.tabs{display:flex;gap:6px;flex-wrap:wrap;}
-.tabs button{border-radius:999px;background:transparent;padding:5px 12px;font-size:0.85rem;}
-.tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;}
+.tabs button{border-radius:999px;background:transparent;padding:8px 18px;font-size:0.95rem; font-weight: 600;}
+.tabs button.on{
+  background: linear-gradient(135deg, var(--ink), #dcd6f7);
+  color:var(--bg);border-color:var(--ink);font-weight:800;
+  box-shadow: 0 4px 15px rgba(248, 245, 255, 0.25);
+}
+
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 8px 16px;
+}
 
 .search-bar-wrap {
-  margin: 0 8px 14px;
   display: inline-flex;
   gap: 6px;
   align-items: center;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
 }
 .search-bar-wrap input {
   width: 100%;
   background: var(--panel);
   border-color: var(--line);
-  font-size: 0.85rem;
-  padding: 6px 10px;
+  font-size: 0.9rem;
+  padding: 8px 12px;
 }
 
-.view-switch-container {
-  display: flex;
-  justify-content: center;
-  margin: 12px 8px 16px;
-}
 .view-switch {
   display: inline-flex;
   background: var(--panel2);
@@ -178,25 +210,26 @@ h3{font-family:var(--display);margin:0 0 8px}
   background: transparent;
   border: none;
   border-radius: 999px;
-  padding: 6px 16px;
+  padding: 8px 18px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--muted);
   box-shadow: none !important;
   transform: none !important;
+  transition: color 0.3s ease, background 0.3s ease;
 }
 .view-switch button.active {
-  background: var(--red);
+  background: linear-gradient(135deg, #ff4d4d, #e62a2a);
   color: #fff;
   font-weight: 700;
+  box-shadow: 0 4px 14px rgba(230,42,42,0.4) !important;
 }
 
-@keyframes simpleFadeUp { 
-  from { opacity: 0; transform: translateY(6px); } 
-  to { opacity: 1; transform: translateY(0); } 
+@keyframes buzzIn { 
+  0% { opacity: 0; transform: translateY(14px) scale(0.94); } 
+  100% { opacity: 1; transform: translateY(0) scale(1); } 
 }
 
-/* Größere Schrift, aber flache Höhe durch minimales Padding */
 .row{
   position: relative;
   display: grid;
@@ -204,53 +237,68 @@ h3{font-family:var(--display);margin:0 0 8px}
   gap: 8px;
   background: var(--panel2);
   border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 4px 10px;
+  border-radius: 10px;
+  padding: 6px 10px;
   align-items: center;
-  animation: simpleFadeUp 0.3s ease-out backwards;
-  margin-bottom: 4px;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  animation: buzzIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  margin-bottom: 6px;
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
   user-select: none;
 }
 
 .team-type-odd .row { background: rgba(45, 12, 12, 0.75); border-color: rgba(90, 25, 25, 0.8); }
 .team-type-even .row { background: rgba(58, 18, 15, 0.75); border-color: rgba(110, 38, 32, 0.8); }
 
-.row.selectable { cursor: pointer; }
-.row.selectable:hover { border-color: var(--gold); }
-.row.selectable:active { transform: scale(0.97); }
-.row.selected { border-color: var(--gold); background: rgba(255, 209, 102, 0.18) !important; }
+.row:hover {
+  border-color: rgba(255, 209, 102, 0.4);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
 
-.row.stealable { cursor: pointer; border-color: rgba(255, 209, 102, 0.6); }
-.row.stealable:hover { border-color: var(--gold); background: rgba(255, 209, 102, 0.1) !important; }
+.row.selectable { cursor: pointer; }
+.row.selectable:hover { border-color: var(--gold); transform: translateY(-1px); }
+.row.selectable:active { transform: scale(0.97); }
+.row.selected { 
+  border-color: var(--gold) !important; 
+  background: rgba(255, 209, 102, 0.2) !important; 
+  box-shadow: 0 0 18px rgba(255, 209, 102, 0.35) !important;
+}
+
+.row.stealable { cursor: pointer; border-color: rgba(255, 209, 102, 0.7); animation: stealPulse 2s infinite alternate ease-in-out; }
+@keyframes stealPulse {
+  0% { box-shadow: 0 0 4px rgba(255,209,102,0.2); }
+  100% { box-shadow: 0 0 18px rgba(255,209,102,0.65); }
+}
+.row.stealable:hover { border-color: var(--gold); background: rgba(255, 209, 102, 0.15) !important; }
 .row.stealable:active { transform: scale(0.97); }
 
-.row.eliminated { opacity: 0.5; filter: grayscale(80%); background: rgba(0,0,0,0.35) !important; }
+.row.eliminated { opacity: 0.45; filter: grayscale(85%); background: rgba(0,0,0,0.4) !important; }
 .row.eliminated .meta b { text-decoration: line-through; color: var(--muted); }
 
 .row.advanced { 
-  background: rgba(46, 204, 113, 0.2) !important; 
+  background: rgba(46, 204, 113, 0.22) !important; 
   border-color: var(--green) !important; 
+  box-shadow: 0 0 14px rgba(46, 204, 113, 0.25);
 }
 
 @keyframes highlightPulse {
   0% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
-  25% { transform: scale(1.02); box-shadow: 0 0 14px var(--gold); border-color: var(--gold); }
-  75% { transform: scale(1.02); box-shadow: 0 0 14px var(--gold); border-color: var(--gold); }
+  30% { transform: scale(1.025); box-shadow: 0 0 22px var(--gold); border-color: var(--gold); background: rgba(255,209,102,0.28); }
+  70% { transform: scale(1.025); box-shadow: 0 0 22px var(--gold); border-color: var(--gold); background: rgba(255,209,102,0.28); }
   100% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
 }
 .row.recently-updated {
-  animation: highlightPulse 3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: highlightPulse 4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .row-content{ display:flex; flex-direction:column; gap:1px; align-items:center; justify-content:center; width:100%; }
 .meta{ display:flex; align-items: center; justify-content: center; gap: 6px; text-align: center; width: 100%; }
-.meta b{font-size:1.08rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.15;}
+.meta b{font-size:1.1rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.15;}
 
+/* Statische Buzzer-Box (kein Pulsieren mehr hier) */
 .badge-box {
   background: linear-gradient(135deg, #ffcd3c, #f5a623);
   color: #000;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 6px;
   font-weight: 800;
   font-size: 0.85rem;
@@ -258,64 +306,70 @@ h3{font-family:var(--display);margin:0 0 8px}
   align-items: center;
   justify-content: center;
   font-family: 'Jost', sans-serif;
-  min-width: 22px;
-  height: 22px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  min-width: 24px;
+  height: 24px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
   border: 1px solid rgba(0,0,0,0.15);
   line-height: 1;
   pointer-events: none;
 }
 
+/* Ausschließlich das Pik As pulsiert majestätisch */
 .ace-symbol {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   color: var(--gold);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
+  min-width: 24px;
+  height: 24px;
   line-height: 1;
-  text-shadow: 0 0 10px rgba(255, 209, 102, 0.6);
+  text-shadow: 0 0 12px rgba(255, 209, 102, 0.8);
   pointer-events: none;
+  animation: aceGlow 2.4s infinite alternate ease-in-out;
+}
+@keyframes aceGlow {
+  0% { transform: scale(1) rotate(-3deg); text-shadow: 0 0 8px rgba(255,209,102,0.5); }
+  100% { transform: scale(1.15) rotate(3deg); text-shadow: 0 0 24px rgba(255,209,102,0.95); }
 }
 
 .floating-popup {
   position: fixed;
-  bottom: 16px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(20, 8, 8, 0.9);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--line);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-  padding: 10px 16px;
-  border-radius: 14px;
+  background: rgba(20, 8, 8, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--gold);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.75), 0 0 25px rgba(255,209,102,0.25);
+  padding: 14px 24px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   z-index: 1000;
-  animation: slideUpPopup 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUpPopup 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes slideUpPopup {
-  from { opacity: 0; transform: translate(-50%, 16px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from { opacity: 0; transform: translate(-50%, 30px) scale(0.94); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
 
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 
 dialog{
   background:var(--panel);
   color:var(--ink);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:20px;
+  border-radius:20px;
+  padding:22px;
   width:min(500px,92vw);
-  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+  animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.85), 0 0 35px rgba(230,42,42,0.25);
 }
-dialog::backdrop{background:rgba(5,2,5,.85);backdrop-filter:blur(6px);animation:fadeIn .25s ease}
+dialog::backdrop{background:rgba(5,2,5,.88);backdrop-filter:blur(10px);animation:fadeIn .4s ease}
 @keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.92) translateY(14px); }
+  from { opacity: 0; transform: scale(0.85) translateY(25px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -324,18 +378,19 @@ dialog label{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;color
 dialog input,dialog select{width:100%}
 
 .empty{color:var(--muted);padding:12px 0; text-align: center; font-size: 0.85rem;}
-.sm{padding:2px 6px;font-size:0.7rem; border-radius: 6px;}
+.sm{padding:4px 10px;font-size:0.8rem; border-radius: 6px;}
 .stage-item { display:flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .stage-item input { flex: 1; }
 
 .header-actions { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; padding: 0 8px; }
 
+/* Noch smootheres, längeres Einfliegen der Ergebnis-Karten */
 @keyframes resultCardPop {
-  0% { opacity: 0; transform: scale(0.8) translateY(12px); }
+  0% { opacity: 0; transform: scale(0.8) translateY(20px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 .anim-result-card {
-  animation: resultCardPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: resultCardPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 </style>
 </head>
@@ -345,7 +400,7 @@ dialog input,dialog select{width:100%}
     <div class="brand" data-act="goHome">🎙️ THE VOICE</div>
     <div class="who">
       <span id="net" class="net"></span>
-      <div id="header_tools"></div>
+      <div id="header_tools" style="display:flex; gap:10px; align-items:center;"></div>
     </div>
   </header>
   <div id="app"></div>
@@ -637,14 +692,14 @@ function render() {
 
     if (currentStageIdx > 0 && ui.selectedTalents.length > 0 && !ui.stealModeActive) {
       floatingContainer.innerHTML = '<div class="floating-popup">' +
-                '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.85rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
-                '<button class="ghost sm" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
-                '<button class="primary sm" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
+                '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
+                '<button class="ghost" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
+                '<button class="primary" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
               '</div>';
     } else if (ui.stealModeActive) {
-      floatingContainer.innerHTML = '<div class="floating-popup" style="background:var(--panel); border:1px solid var(--gold); padding:8px 14px; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,0.5);">' +
-                '<span style="color:var(--gold); font-weight:700; font-size:0.9rem;">🔄 Klicke auf ein ausgeschiedenes Talent, um den Steal-Deal zu starten!</span>' +
-                '<button class="ghost sm" style="background:var(--panel2); border-color:var(--line);" data-act="toggleStealMode">Abbrechen</button>' +
+      floatingContainer.innerHTML = '<div class="floating-popup" style="background:var(--panel); border:1px solid var(--gold); padding:10px 16px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.6);">' +
+                '<span style="color:var(--gold); font-weight:700; font-size:0.95rem;">🔄 Klicke auf ein ausgeschiedenes Talent, um den Steal-Deal zu starten!</span>' +
+                '<button class="ghost" style="background:var(--panel2); border-color:var(--line);" data-act="toggleStealMode">Abbrechen</button>' +
               '</div>';
     } else {
       if (floatingContainer) floatingContainer.innerHTML = '';
@@ -655,7 +710,7 @@ function render() {
 function homeView() {
   var html = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:0 8px;">' +
              '<h1 class="hero" style="margin:20px 0">Alle Staffeln</h1>' +
-             '<button class="primary" data-act="openSeasonModal" style="font-size:1rem; padding:8px 18px">＋ Neue Staffel</button>' +
+             '<button class="primary" data-act="openSeasonModal" style="font-size:1.05rem; padding:10px 20px">＋ Neue Staffel</button>' +
              '</div>';
   
   if (S.seasons.length === 0) {
@@ -712,13 +767,13 @@ function seasonView(cs) {
     return html;
   }
 
-  html += '<div class="search-bar-wrap">' +
-            '<input type="text" id="talent_search_input" placeholder="🔍 Talent suchen..." value="' + esc(ui.searchQuery) + '" data-input="searchQuery">' +
-            (ui.searchQuery ? '<button class="ghost sm" data-act="clearSearch">✕</button>' : '') +
-          '</div>';
-
   var isFake = ui.mode === "fake";
-  html += '<div class="view-switch-container">' +
+  
+  html += '<div class="controls-row">' +
+            '<div class="search-bar-wrap">' +
+              '<input type="text" id="talent_search_input" placeholder="🔍 Talent suchen..." value="' + esc(ui.searchQuery) + '" data-input="searchQuery">' +
+              (ui.searchQuery ? '<button class="ghost sm" data-act="clearSearch">✕</button>' : '') +
+            '</div>' +
             '<div class="view-switch">' +
               '<button class="' + (isFake ? 'active' : '') + '" data-act="setViewMode" data-mode="fake">🎭 Fake-Teams</button>' +
               '<button class="' + (!isFake ? 'active' : '') + '" data-act="setViewMode" data-mode="real">🎤 Real Teams</button>' +
@@ -1053,7 +1108,7 @@ function openSettingsModal() {
     var rt = cs.realTeams[i];
     var rtColor = rt.color || "#e62a2a";
     realTeamsHtml += '<div class="stage-item" data-rtid="'+rt.id+'">' +
-      '<input type="color" class="rt-color" value="'+rtColor+'" title="Farbe wählen" style="width:38px; height:34px; padding:2px; cursor:pointer; border-radius:8px;">' +
+      '<input type="color" class="rt-color" value="'+rtColor+'" title="Farbe wählen" style="width:38px; height:38px; padding:2px; cursor:pointer; border-radius:8px;">' +
       '<input type="text" class="rt-name" value="'+esc(rt.name)+'" placeholder="Reales Team (z.B. Team Shirin)">' +
       '<input type="text" class="rt-init" value="'+esc(rt.initial)+'" placeholder="Kürzel" maxlength="3" style="width:65px">' +
       '<button class="ghost danger" data-act="delRealTeam" data-id="'+rt.id+'">✕</button>' +
@@ -1090,7 +1145,7 @@ function openSettingsModal() {
     '<h3>Daten Export & Import (Backup)</h3>' +
     '<div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">' +
       '<button class="ghost" data-act="exportJSON" style="border-color:var(--line);">💾 JSON Backup exportieren</button>' +
-      '<label class="ghost" style="display:inline-flex; align-items:center; justify-content:center; margin:0; border:1px solid var(--line); border-radius:10px; padding:6px 12px; cursor:pointer; background:var(--panel2); color:var(--ink); font-size:0.85rem;">' +
+      '<label class="ghost" style="display:inline-flex; align-items:center; justify-content:center; margin:0; border:1px solid var(--line); border-radius:10px; padding:8px 14px; cursor:pointer; background:var(--panel2); color:var(--ink); font-size:0.9rem;">' +
         '📂 JSON Backup importieren <input type="file" id="import_file_input" accept=".json" style="display:none;" data-chg="importJSON">' +
       '</label>' +
     '</div>' +
@@ -1120,21 +1175,21 @@ function openTalentModal(teamId, editId) {
   var currentBuzzers = t ? (t.buzzers || 1) : 1;
   var currentTeamId = teamId || (cs.teams.length > 0 ? cs.teams[0].id : "");
 
-  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;" id="fake_team_btn_group">';
+  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;" id="fake_team_btn_group">';
   var activeTeams = cs.teams.slice(0, cs.teamCount);
   for(var i = 0; i < activeTeams.length; i++) {
     var tm = activeTeams[i];
     var isSelectedF = currentTeamId === tm.id;
-    fakeTeamButtonsHtml += '<button type="button" class="fk-pick-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:80px; font-weight:700;">' + esc(tm.name) + '</button>';
+    fakeTeamButtonsHtml += '<button type="button" class="fk-pick-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:85px; font-weight:700;">' + esc(tm.name) + '</button>';
   }
   fakeTeamButtonsHtml += '</div>';
 
-  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:6px;" id="real_team_btn_group">';
+  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;" id="real_team_btn_group">';
   if (cs.realTeams) {
     for(var i = 0; i < cs.realTeams.length; i++) {
       var rt = cs.realTeams[i];
       var isSelected = currentRealId === rt.id;
-      realButtonsHtml += '<button type="button" class="rt-pick-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:90px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
+      realButtonsHtml += '<button type="button" class="rt-pick-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:95px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
     }
   }
   realButtonsHtml += '</div>';
@@ -1142,11 +1197,11 @@ function openTalentModal(teamId, editId) {
   var isNoTeamSelected = currentRealId === "";
   var noTeamButtonHtml = '<button type="button" class="rt-pick-btn ' + (isNoTeamSelected ? "primary" : "ghost") + '" data-realid="" style="width:100%; margin-bottom:12px;">Kein Team</button>';
 
-  var buzzerButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;" id="buzzer_btn_group">';
+  var buzzerButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;" id="buzzer_btn_group">';
   var maxBuzzers = cs.teamCount || 4;
   for(var b = 1; b <= maxBuzzers; b++) {
     var isSelectedB = currentBuzzers === b;
-    buzzerButtonsHtml += '<button type="button" class="bz-pick-btn ' + (isSelectedB ? "primary" : "ghost") + '" data-buzz="' + b + '" style="flex:1; min-width:40px; font-weight:700;">' + b + '</button>';
+    buzzerButtonsHtml += '<button type="button" class="bz-pick-btn ' + (isSelectedB ? "primary" : "ghost") + '" data-buzz="' + b + '" style="flex:1; min-width:45px; font-weight:700;">' + b + '</button>';
   }
   buzzerButtonsHtml += '</div>';
 
@@ -1168,11 +1223,11 @@ function openTalentModal(teamId, editId) {
     buzzerButtonsHtml +
     '<input type="hidden" id="tal_buzz_val" value="' + currentBuzzers + '">' +
 
-    '<label style="display:flex; flex-direction:row; align-items:center; gap:6px; cursor:pointer; margin-top:6px;">' +
+    '<label style="display:flex; flex-direction:row; align-items:center; gap:8px; cursor:pointer; margin-top:8px;">' +
       '<input type="checkbox" id="tal_allstar" ' + isAllStarChecked + ' style="width:auto; cursor:pointer;">' +
       '<span>⭐ All-Star (Kehrt zurück in die Show)</span>' +
     '</label>' +
-    '<div class="actions" style="margin-top:14px;">' +
+    '<div class="actions" style="margin-top:16px;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" data-act="saveTalent">Speichern</button>' +
     '</div>';
@@ -1190,22 +1245,22 @@ function openStealPopupForTalent(talentId) {
   var currentRealId = t.realTeamId || "";
   var currentTeamId = t.teamId || "";
 
-  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;" id="steal_real_btn_group">';
+  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;" id="steal_real_btn_group">';
   if (cs.realTeams) {
     for(var i = 0; i < cs.realTeams.length; i++) {
       var rt = cs.realTeams[i];
       var isSelected = currentRealId === rt.id;
-      realButtonsHtml += '<button type="button" class="steal-rt-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:90px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
+      realButtonsHtml += '<button type="button" class="steal-rt-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:95px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
     }
   }
   realButtonsHtml += '</div>';
 
-  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:14px;" id="steal_fake_btn_group">';
+  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;" id="steal_fake_btn_group">';
   var activeTeams = cs.teams.slice(0, cs.teamCount);
   for(var i = 0; i < activeTeams.length; i++) {
     var tm = activeTeams[i];
     var isSelectedF = currentTeamId === tm.id;
-    fakeTeamButtonsHtml += '<button type="button" class="steal-fk-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:80px; font-weight:700;">' + esc(tm.name) + '</button>';
+    fakeTeamButtonsHtml += '<button type="button" class="steal-fk-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:85px; font-weight:700;">' + esc(tm.name) + '</button>';
   }
   fakeTeamButtonsHtml += '</div>';
 
@@ -1257,16 +1312,16 @@ function openBattleModal() {
       buzzerBadgePopup = '<span class="badge-box" title="Buzzer" style="font-size:0.8rem; min-width:20px; height:20px;">' + esc(t.buzzers) + '</span>';
     }
 
-    listHtml += '<div style="position:relative; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px; margin-bottom:10px;" id="battle_item_' + t.id + '">' +
-                  '<div style="position:absolute; top:10px; right:10px;">' + buzzerBadgePopup + '</div>' +
-                  '<div style="margin-bottom:2px; font-weight:800; font-size:1rem; color:var(--ink); padding-right:28px;">' + allStarStar + esc(t.name) + '</div>' +
-                  '<div style="margin-bottom:8px; font-size:0.8rem; color:var(--muted); display:flex; gap:8px; flex-wrap:wrap;">' +
+    listHtml += '<div style="position:relative; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px;" id="battle_item_' + t.id + '">' +
+                  '<div style="position:absolute; top:12px; right:12px;">' + buzzerBadgePopup + '</div>' +
+                  '<div style="margin-bottom:2px; font-weight:800; font-size:1.05rem; color:var(--ink); padding-right:28px;">' + allStarStar + esc(t.name) + '</div>' +
+                  '<div style="margin-bottom:10px; font-size:0.85rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap;">' +
                     '<span>🎭 ' + esc(fakeTeamInfo) + '</span>' +
                     '<span>🎤 ' + esc(realTeamInfo) + '</span>' +
                   '</div>' +
-                  '<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:6px;">' +
-                    '<button type="button" class="status-btn ' + (isAdv ? 'primary' : 'ghost') + '" data-status="advanced" data-talid="' + t.id + '" style="font-size:0.85rem; padding:8px; font-weight:700; border-color:var(--green); color:' + (isAdv ? '#fff' : 'var(--green)') + '; background:' + (isAdv ? 'var(--green)' : 'transparent') + ';">✓ Weiter</button>' +
-                    '<button type="button" class="status-btn ' + (isElim ? 'primary' : 'ghost') + '" data-status="eliminated" data-talid="' + t.id + '" style="font-size:0.85rem; padding:8px; font-weight:700; border-color:var(--red); color:' + (isElim ? '#fff' : 'var(--red)') + '; background:' + (isElim ? 'var(--red)' : 'transparent') + ';">✕ Raus</button>' +
+                  '<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;">' +
+                    '<button type="button" class="status-btn ' + (isAdv ? 'primary' : 'ghost') + '" data-status="advanced" data-talid="' + t.id + '" style="font-size:0.9rem; padding:10px; font-weight:700; border-color:var(--green); color:' + (isAdv ? '#fff' : 'var(--green)') + '; background:' + (isAdv ? 'var(--green)' : 'transparent') + ';">✓ Weiter</button>' +
+                    '<button type="button" class="status-btn ' + (isElim ? 'primary' : 'ghost') + '" data-status="eliminated" data-talid="' + t.id + '" style="font-size:0.9rem; padding:10px; font-weight:700; border-color:var(--red); color:' + (isElim ? '#fff' : 'var(--red)') + '; background:' + (isElim ? 'var(--red)' : 'transparent') + ';">✕ Raus</button>' +
                   '</div>' +
                   '<input type="hidden" id="status_val_' + t.id + '" value="' + status + '">' +
                 '</div>';
@@ -1274,8 +1329,8 @@ function openBattleModal() {
 
   dlg.innerHTML = '<h3>⚔️ Battle / Entscheidung</h3>' +
     '<p class="hint">Wähle für jedes ausgewählte Talent den Status (erneutes Klicken setzt auf Normal zurück).</p>' +
-    '<div style="max-height:300px; overflow-y:auto; margin-bottom:14px; padding-right:4px;">' + listHtml + '</div>' +
-    '<div class="actions" style="margin-top:14px; justify-content:flex-end;">' +
+    '<div style="max-height:320px; overflow-y:auto; margin-bottom:14px; padding-right:4px;">' + listHtml + '</div>' +
+    '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" data-act="saveBattle">Ergebnis speichern</button>' +
     '</div>';
@@ -1310,9 +1365,9 @@ var A = {
     var floatingContainer = $("#floating_popup_container");
     if (ui.selectedTalents.length > 0) {
       floatingContainer.innerHTML = '<div class="floating-popup">' +
-                '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.85rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
-                '<button class="ghost sm" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
-                '<button class="primary sm" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
+                '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
+                '<button class="ghost" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
+                '<button class="primary" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
               '</div>';
     } else {
       floatingContainer.innerHTML = '';
@@ -1405,10 +1460,10 @@ var A = {
     dlg.innerHTML = '<div style="text-align:center; padding:8px 0;">' +
                       '<h3 style="color:var(--gold); font-size:1.2rem; margin-bottom:4px;">🔄 Steal-Deal erfolgreich!</h3>' +
                       '<p class="hint"><b>' + esc(t.name) + '</b> wurde erfolgreich gerettet & global aktualisiert:</p>' +
-                      '<div class="anim-result-card" style="background:var(--panel2); border:1px solid var(--gold); border-radius:10px; padding:10px; margin-top:10px; text-align:left;">' +
-                        '<div style="font-weight:800; font-size:1rem; color:var(--ink); margin-bottom:2px;">⭐ ' + esc(t.name) + '</div>' +
-                        '<div style="font-size:0.85rem; color:var(--muted);">🎭 Neues Fake-Team: <b>' + esc(fakeTeamObj.name || '') + '</b></div>' +
-                        '<div style="font-size:0.85rem; color:var(--muted);">🎤 Neuer Coach: <b style="color:' + (realTeamObj ? realTeamObj.color : 'var(--gold)') + ';">' + esc(realTeamObj ? realTeamObj.name : 'Kein Coach') + '</b></div>' +
+                      '<div class="anim-result-card" style="background:var(--panel2); border:1px solid var(--gold); border-radius:10px; padding:12px; margin-top:10px; text-align:left;">' +
+                        '<div style="font-weight:800; font-size:1.05rem; color:var(--ink); margin-bottom:4px;">⭐ ' + esc(t.name) + '</div>' +
+                        '<div style="font-size:0.9rem; color:var(--muted);">🎭 Neues Fake-Team: <b>' + esc(fakeTeamObj.name || '') + '</b></div>' +
+                        '<div style="font-size:0.9rem; color:var(--muted);">🎤 Neuer Coach: <b style="color:' + (realTeamObj ? realTeamObj.color : 'var(--gold)') + ';">' + esc(realTeamObj ? realTeamObj.name : 'Kein Coach') + '</b></div>' +
                       '</div>' +
                     '</div>';
 
@@ -1418,8 +1473,8 @@ var A = {
       render();
       setTimeout(function(){
         ui.highlightTalentIds = [];
-      }, 3200);
-    }, 1800);
+      }, 3500);
+    }, 2000);
 
     return "keep";
   },
@@ -1496,12 +1551,12 @@ var A = {
       var statusBadgeStyle = ut.status === 'advanced' ? 'background:rgba(46,204,113,0.2); color:var(--green); border:1px solid var(--green);' : (ut.status === 'eliminated' ? 'background:rgba(230,42,42,0.2); color:var(--red); border:1px solid var(--red);' : 'background:rgba(255,209,102,0.15); color:var(--gold); border:1px solid var(--gold);');
       var statusText = ut.status === 'advanced' ? '✓ Weiter' : (ut.status === 'eliminated' ? '✕ Raus' : '⚪ Normal');
 
-      animListHtml += '<div class="anim-result-card" style="animation-delay: ' + (k * 0.1) + 's; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">' +
+      animListHtml += '<div class="anim-result-card" style="animation-delay: ' + (k * 0.15) + 's; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">' +
                         '<div>' +
-                          '<div style="font-weight:800; font-size:0.95rem; color:var(--ink);">' + esc(ut.name) + '</div>' +
-                          '<div style="font-size:0.8rem; color:var(--muted);">🎭 ' + esc(ut.teamName) + '</div>' +
+                          '<div style="font-weight:800; font-size:1rem; color:var(--ink);">' + esc(ut.name) + '</div>' +
+                          '<div style="font-size:0.85rem; color:var(--muted);">🎭 ' + esc(ut.teamName) + '</div>' +
                         '</div>' +
-                        '<div style="padding:3px 10px; border-radius:6px; font-weight:700; font-size:0.85rem; ' + statusBadgeStyle + '">' + statusText + '</div>' +
+                        '<div style="padding:4px 12px; border-radius:6px; font-weight:700; font-size:0.9rem; ' + statusBadgeStyle + '">' + statusText + '</div>' +
                       '</div>';
     }
 
@@ -1517,8 +1572,8 @@ var A = {
       render();
       setTimeout(function(){
         ui.highlightTalentIds = [];
-      }, 3200);
-    }, 1600);
+      }, 3500);
+    }, 1800);
 
     return "keep";
   },
