@@ -191,7 +191,8 @@ h3{font-family:var(--display);margin:0 0 12px}
   align-items: center;
   animation: simpleFadeUp 0.3s ease-out backwards;
   margin-bottom: 5px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  user-select: none; /* Verhindert das blaue Markieren von Text */
 }
 
 .team-type-odd .row { background: rgba(45, 12, 12, 0.7); border-color: rgba(90, 25, 25, 0.8); }
@@ -199,7 +200,8 @@ h3{font-family:var(--display);margin:0 0 12px}
 
 .row.selectable { cursor: pointer; }
 .row.selectable:hover { border-color: var(--gold); }
-.row.selected { border-color: var(--gold); background: rgba(255, 209, 102, 0.12) !important; }
+.row.selectable:active { transform: scale(0.97); } /* Haptischer Klick-Effekt */
+.row.selected { border-color: var(--gold); background: rgba(255, 209, 102, 0.15) !important; }
 
 .row.eliminated { opacity: 0.5; filter: grayscale(80%); background: rgba(0,0,0,0.3) !important; }
 .row.eliminated .meta b { text-decoration: line-through; color: var(--muted); }
@@ -209,7 +211,18 @@ h3{font-family:var(--display);margin:0 0 12px}
   border-color: var(--green) !important; 
 }
 
-.row-content{ display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; width:100%; }
+/* 3 Sekunden Animation für das Highlight nach dem Speichern */
+@keyframes highlightPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
+  25% { transform: scale(1.03); box-shadow: 0 0 18px var(--gold); border-color: var(--gold); }
+  75% { transform: scale(1.03); box-shadow: 0 0 18px var(--gold); border-color: var(--gold); }
+  100% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
+}
+.row.recently-updated {
+  animation: highlightPulse 3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.row-content{ display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; width:100%; pointer-events: none; }
 .meta{ display:flex; align-items: center; justify-content: center; gap: 6px; text-align: center; width: 100%; }
 .meta b{font-size:1.1rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.2;}
 
@@ -229,6 +242,7 @@ h3{font-family:var(--display);margin:0 0 12px}
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   border: 1px solid rgba(0,0,0,0.15);
   line-height: 1;
+  pointer-events: none;
 }
 
 .ace-symbol {
@@ -241,6 +255,7 @@ h3{font-family:var(--display);margin:0 0 12px}
   height: 26px;
   line-height: 1;
   text-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+  pointer-events: none;
 }
 
 .floating-popup {
@@ -290,6 +305,15 @@ dialog input,dialog select{width:100%}
 .stage-item input { flex: 1; }
 
 .header-actions { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+
+/* Animierte Ergebnis-Karten im Popup */
+@keyframes resultCardPop {
+  0% { opacity: 0; transform: scale(0.8) translateY(15px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.anim-result-card {
+  animation: resultCardPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
 </style>
 </head>
 <body>
@@ -327,7 +351,8 @@ var ui = {
   editSeasonId: null,
   editMode: false,
   selectedTalents: [],
-  mode: "fake"
+  mode: "fake",
+  highlightTalentIds: []
 };
 
 var $ = function(s) { return document.querySelector(s); };
@@ -374,7 +399,8 @@ function toTree() {
         buzzers: tal.buzzers,
         realTeamId: tal.realTeamId || "",
         status: tal.status || "active",
-        isAllStar: tal.isAllStar ? true : false
+        isAllStar: tal.isAllStar ? true : false,
+        isSteal: tal.isSteal ? true : false
       };
     }
     t.seasons[s.id] = seasonsObj;
@@ -428,7 +454,8 @@ function fromTree(t) {
             buzzers: tal.buzzers,
             realTeamId: tal.realTeamId || "",
             status: tal.status || "active",
-            isAllStar: tal.isAllStar ? true : false
+            isAllStar: tal.isAllStar ? true : false,
+            isSteal: tal.isSteal ? true : false
           });
         }
       }
@@ -668,8 +695,9 @@ function seasonView(cs) {
     var stageTalents = cs.talents.filter(function(t) { return t.stageId === ui.tab; });
     if (currentStageIdx >= 2) {
       var prevStageId = cs.stages[currentStageIdx - 1].id;
+      
       var prevAdvancedNames = cs.talents
-        .filter(function(t) { return t.stageId === prevStageId && t.status === 'advanced'; })
+        .filter(function(t) { return t.stageId === prevStageId && (t.status === 'advanced' || t.isSteal); })
         .map(function(t) { return t.name.toLowerCase(); });
       
       return stageTalents.filter(function(t) {
@@ -712,10 +740,15 @@ function seasonView(cs) {
         }
 
         var allStarStar = t.isAllStar ? '<span style="color:var(--gold); font-size:1.1rem; margin-right:2px;" title="All-Star (Kehrt zurück)">⭐</span>' : '';
+        var stealBadge = t.isSteal ? '<span style="color:var(--gold); font-size:0.8rem; margin-left:6px; padding:2px 6px; background:rgba(255,209,102,0.15); border-radius:4px;" title="Steal-Deal Talent">🔄 Steal</span>' : '';
 
         var statusClass = '';
         if (t.status === 'eliminated') statusClass = 'eliminated';
         else if (t.status === 'advanced') statusClass = 'advanced';
+
+        if (ui.highlightTalentIds && ui.highlightTalentIds.includes(t.id)) {
+          statusClass += ' recently-updated';
+        }
 
         var isSelectable = currentStageIdx > 0;
         var isSelected = ui.selectedTalents.includes(t.id);
@@ -733,11 +766,11 @@ function seasonView(cs) {
         var rowActionAttr = isSelectable ? 'data-act="toggleSelectTalent" data-id="'+t.id+'"' : '';
 
         talentsHtml += 
-          '<div class="row ' + statusClass + '" ' + rowActionAttr + '>' +
+          '<div class="row ' + statusClass + '" id="row_talent_' + t.id + '" ' + rowActionAttr + '>' +
             buzzerBadge +
             '<div class="row-content">' +
               '<div class="meta">' +
-                allStarStar + '<b>' + esc(t.name) + '</b>' +
+                allStarStar + '<b>' + esc(t.name) + '</b>' + stealBadge +
               '</div>' +
               editButtonsHtml +
             '</div>' +
@@ -798,10 +831,15 @@ function seasonView(cs) {
         }
 
         var allStarStar = t.isAllStar ? '<span style="color:var(--gold); font-size:1.1rem; margin-right:2px;" title="All-Star (Kehrt zurück)">⭐</span>' : '';
+        var stealBadge = t.isSteal ? '<span style="color:var(--gold); font-size:0.8rem; margin-left:6px; padding:2px 6px; background:rgba(255,209,102,0.15); border-radius:4px;" title="Steal-Deal Talent">🔄 Steal</span>' : '';
 
         var statusClass = '';
         if (t.status === 'eliminated') statusClass = 'eliminated';
         else if (t.status === 'advanced') statusClass = 'advanced';
+
+        if (ui.highlightTalentIds && ui.highlightTalentIds.includes(t.id)) {
+          statusClass += ' recently-updated';
+        }
 
         var isSelectable = currentStageIdx > 0;
         var isSelected = ui.selectedTalents.includes(t.id);
@@ -811,11 +849,11 @@ function seasonView(cs) {
         var rowActionAttr = isSelectable ? 'data-act="toggleSelectTalent" data-id="'+t.id+'"' : '';
 
         talentsHtml += 
-          '<div class="row ' + statusClass + '" ' + rowActionAttr + '>' +
+          '<div class="row ' + statusClass + '" id="row_talent_' + t.id + '" ' + rowActionAttr + '>' +
             buzzerBadge +
             '<div class="row-content">' +
               '<div class="meta">' +
-                allStarStar + '<b>' + esc(t.name) + '</b>' +
+                allStarStar + '<b>' + esc(t.name) + '</b>' + stealBadge +
               '</div>' +
             '</div>' +
             '<div>' + fakeTeamBadge + '</div>' +
@@ -998,7 +1036,6 @@ function openTalentModal(teamId, editId) {
   var currentBuzzers = t ? (t.buzzers || 1) : 1;
   var currentTeamId = teamId || (cs.teams.length > 0 ? cs.teams[0].id : "");
 
-  // Buttons für Fake-Teams erzeugen
   var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;" id="fake_team_btn_group">';
   var activeTeams = cs.teams.slice(0, cs.teamCount);
   for(var i = 0; i < activeTeams.length; i++) {
@@ -1008,7 +1045,6 @@ function openTalentModal(teamId, editId) {
   }
   fakeTeamButtonsHtml += '</div>';
 
-  // Buttons für reale Teams erzeugen (ohne "Kein Team" in der oberen Reihe)
   var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;" id="real_team_btn_group">';
   if (cs.realTeams) {
     for(var i = 0; i < cs.realTeams.length; i++) {
@@ -1019,11 +1055,9 @@ function openTalentModal(teamId, editId) {
   }
   realButtonsHtml += '</div>';
 
-  // "Kein Team" als eigener breiter Button darunter platziert
   var isNoTeamSelected = currentRealId === "";
   var noTeamButtonHtml = '<button type="button" class="rt-pick-btn ' + (isNoTeamSelected ? "primary" : "ghost") + '" data-realid="" style="width:100%; margin-bottom:14px;">Kein Team</button>';
 
-  // Buttons für Buzzer-Anzahl (1 bis teamCount) erzeugen
   var buzzerButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;" id="buzzer_btn_group">';
   var maxBuzzers = cs.teamCount || 4;
   for(var b = 1; b <= maxBuzzers; b++) {
@@ -1119,28 +1153,32 @@ function openBattleModal() {
     var t = cs.talents.find(function(x){ return x.id === talId; });
     if (!t) continue;
     var teamObj = cs.teams.find(function(tm){ return tm.id === t.teamId; }) || {};
+    var realTeamObj = cs.realTeams ? cs.realTeams.find(function(rt){ return rt.id === t.realTeamId; }) : null;
 
     var status = t.status || 'active';
     var allStarStar = t.isAllStar ? '⭐ ' : '';
+    var realTeamInfo = realTeamObj ? ('Coach: ' + realTeamObj.name) : 'Kein reales Team';
+    var fakeTeamInfo = teamObj.name ? ('Fake-Team: ' + teamObj.name) : '';
 
-    listHtml += '<div style="background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:10px;">' +
-                  '<div style="margin-bottom:8px; font-weight:700; font-size:1.05rem;">' + allStarStar + esc(t.name) + ' <span style="font-size:0.85rem; color:var(--muted); font-weight:normal;">(' + esc(teamObj.name || '') + ')</span></div>' +
-                  '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">' +
-                    '<label class="status-box-label" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 8px; border-radius:8px; border:1px solid ' + (status === 'active' ? 'var(--gold)' : 'var(--line)') + '; cursor:pointer; background:' + (status === 'active' ? 'rgba(255,209,102,0.1)' : 'transparent') + '; font-size:0.9rem; margin:0; text-align:center;">' +
-                      '<input type="radio" name="battle_res_' + t.id + '" value="active" ' + (status === 'active' ? 'checked' : '') + ' style="cursor:pointer;" data-status-radio="active" data-talid="' + t.id + '"> ⚪ Normal' +
-                    '</label>' +
-                    '<label class="status-box-label" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 8px; border-radius:8px; border:1px solid ' + (status === 'advanced' ? 'var(--green)' : 'var(--line)') + '; cursor:pointer; background:' + (status === 'advanced' ? 'rgba(46,204,113,0.15)' : 'transparent') + '; color:var(--green); font-size:0.9rem; font-weight:600; margin:0; text-align:center;">' +
-                      '<input type="radio" name="battle_res_' + t.id + '" value="advanced" ' + (status === 'advanced' ? 'checked' : '') + ' style="cursor:pointer;" data-status-radio="advanced" data-talid="' + t.id + '"> ✔️ Weiter' +
-                    '</label>' +
-                    '<label class="status-box-label" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 8px; border-radius:8px; border:1px solid ' + (status === 'eliminated' ? 'var(--red)' : 'var(--line)') + '; cursor:pointer; background:' + (status === 'eliminated' ? 'rgba(230,42,42,0.15)' : 'transparent') + '; color:var(--red); font-size:0.9rem; font-weight:600; margin:0; text-align:center;">' +
-                      '<input type="radio" name="battle_res_' + t.id + '" value="eliminated" ' + (status === 'eliminated' ? 'checked' : '') + ' style="cursor:pointer;" data-status-radio="eliminated" data-talid="' + t.id + '"> ❌ Raus' +
-                    '</label>' +
+    var isAdv = status === 'advanced';
+    var isElim = status === 'eliminated';
+
+    listHtml += '<div style="background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:12px;" id="battle_item_' + t.id + '">' +
+                  '<div style="margin-bottom:4px; font-weight:800; font-size:1.1rem; color:var(--ink);">' + allStarStar + esc(t.name) + '</div>' +
+                  '<div style="margin-bottom:10px; font-size:0.85rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap;">' +
+                    '<span>🎭 ' + esc(fakeTeamInfo) + '</span>' +
+                    '<span>🎤 ' + esc(realTeamInfo) + '</span>' +
                   '</div>' +
+                  '<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;">' +
+                    '<button type="button" class="status-btn ' + (isAdv ? 'primary' : 'ghost') + '" data-status="advanced" data-talid="' + t.id + '" style="font-size:0.95rem; padding:10px; font-weight:700; border-color:var(--green); color:' + (isAdv ? '#fff' : 'var(--green)') + '; background:' + (isAdv ? 'var(--green)' : 'transparent') + ';">✓ Weiter</button>' +
+                    '<button type="button" class="status-btn ' + (isElim ? 'primary' : 'ghost') + '" data-status="eliminated" data-talid="' + t.id + '" style="font-size:0.95rem; padding:10px; font-weight:700; border-color:var(--red); color:' + (isElim ? '#fff' : 'var(--red)') + '; background:' + (isElim ? 'var(--red)' : 'transparent') + ';">✕ Raus</button>' +
+                  '</div>' +
+                  '<input type="hidden" id="status_val_' + t.id + '" value="' + status + '">' +
                 '</div>';
   }
 
   dlg.innerHTML = '<h3>⚔️ Battle / Entscheidung</h3>' +
-    '<p class="hint">Wähle für jedes ausgewählte Talent den Status.</p>' +
+    '<p class="hint">Wähle für jedes ausgewählte Talent den Status (erneutes Klicken setzt auf Normal zurück).</p>' +
     '<div style="max-height:360px; overflow-y:auto; margin-bottom:16px; padding-right:4px;">' + listHtml + '</div>' +
     '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
@@ -1201,15 +1239,30 @@ var A = {
   toggleEditMode: function() { ui.editMode = !ui.editMode; ui.enter = true; },
   clearSelection: function() { ui.selectedTalents = []; ui.enter = true; return "render"; },
 
+  // FLÜSSIGE AUSWAHL OHNE FLACKERN / NEULADEN
   toggleSelectTalent: function(el) {
     var id = el.dataset.id;
     var idx = ui.selectedTalents.indexOf(id);
     if (idx > -1) {
       ui.selectedTalents.splice(idx, 1);
+      el.classList.remove("selected");
     } else {
       ui.selectedTalents.push(id);
+      el.classList.add("selected");
     }
-    return "render";
+    
+    // Floating-Popup dynamisch aktualisieren ohne komplettes Neu-Rendern der Seite
+    var floatingContainer = $("#floating_popup_container");
+    if (ui.selectedTalents.length > 0) {
+      floatingContainer.innerHTML = '<div class="floating-popup">' +
+                '<span style="background:var(--panel); border:1px solid var(--line); padding:8px 14px; border-radius:8px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
+                '<button class="ghost sm" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
+                '<button class="primary sm" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
+              '</div>';
+    } else {
+      floatingContainer.innerHTML = '';
+    }
+    return "keep";
   },
 
   openBattleModal: function() { openBattleModal(); return "keep"; },
@@ -1229,12 +1282,23 @@ var A = {
     var t = cs.talents.find(function(x){ return x.id === talentId; });
     if (!t) return "keep";
 
-    t.status = "advanced";
-    t.realTeamId = newRealId;
-    t.teamId = newTeamId;
+    t.status = "eliminated";
 
     var currentStageIdx = cs.stages.findIndex(function(st){ return st.id === ui.tab; });
     var nextStage = (currentStageIdx !== -1 && currentStageIdx < cs.stages.length - 1) ? cs.stages[currentStageIdx + 1] : null;
+
+    var stealTalentId = "tal_steal_" + Date.now();
+    cs.talents.push({
+      id: stealTalentId,
+      stageId: ui.tab,
+      teamId: newTeamId,
+      name: t.name,
+      buzzers: t.buzzers,
+      realTeamId: newRealId,
+      status: "advanced",
+      isAllStar: t.isAllStar,
+      isSteal: true
+    });
 
     if (nextStage) {
       var exists = cs.talents.some(function(existing){
@@ -1249,7 +1313,8 @@ var A = {
           buzzers: t.buzzers,
           realTeamId: newRealId,
           status: "active",
-          isAllStar: t.isAllStar
+          isAllStar: t.isAllStar,
+          isSteal: true
         });
       } else {
         var existingTalent = cs.talents.find(function(existing){
@@ -1258,6 +1323,7 @@ var A = {
         if(existingTalent) {
           existingTalent.teamId = newTeamId;
           existingTalent.realTeamId = newRealId;
+          existingTalent.isSteal = true;
         }
       }
     }
@@ -1283,16 +1349,23 @@ var A = {
     var currentStageIdx = cs.stages.findIndex(function(st){ return st.id === ui.tab; });
     var nextStage = (currentStageIdx !== -1 && currentStageIdx < cs.stages.length - 1) ? cs.stages[currentStageIdx + 1] : null;
 
+    var tempUpdatedTalents = [];
+    ui.highlightTalentIds = [];
+
     for (var i = 0; i < ui.selectedTalents.length; i++) {
       var talId = ui.selectedTalents[i];
       var t = cs.talents.find(function(x){ return x.id === talId; });
       if (!t) continue;
 
-      var radioEl = document.querySelector('input[name="battle_res_' + t.id + '"]:checked');
-      if (!radioEl) continue;
+      var hiddenInput = $("#status_val_" + t.id);
+      if (!hiddenInput) continue;
 
-      var newStatus = radioEl.value;
+      var newStatus = hiddenInput.value;
       t.status = newStatus;
+      ui.highlightTalentIds.push(t.id);
+
+      var teamObj = cs.teams.find(function(tm){ return tm.id === t.teamId; }) || {};
+      tempUpdatedTalents.push({ name: t.name, status: newStatus, teamName: teamObj.name || "Team" });
 
       if (newStatus === 'advanced' && nextStage) {
         var exists = cs.talents.some(function(existing){
@@ -1307,7 +1380,8 @@ var A = {
             buzzers: t.buzzers,
             realTeamId: t.realTeamId,
             status: "active",
-            isAllStar: t.isAllStar
+            isAllStar: t.isAllStar,
+            isSteal: t.isSteal
           });
         }
       } else if ((newStatus === 'eliminated' || newStatus === 'active') && nextStage) {
@@ -1319,9 +1393,39 @@ var A = {
 
     save();
     ui.selectedTalents = [];
-    dlg.close();
-    ui.enter = true;
-    return "render";
+
+    var animListHtml = '';
+    for (var k = 0; k < tempUpdatedTalents.length; k++) {
+      var ut = tempUpdatedTalents[k];
+      var statusBadgeStyle = ut.status === 'advanced' ? 'background:rgba(46,204,113,0.2); color:var(--green); border:1px solid var(--green);' : (ut.status === 'eliminated' ? 'background:rgba(230,42,42,0.2); color:var(--red); border:1px solid var(--red);' : 'background:rgba(255,209,102,0.15); color:var(--gold); border:1px solid var(--gold);');
+      var statusText = ut.status === 'advanced' ? '✓ Weiter' : (ut.status === 'eliminated' ? '✕ Raus' : '⚪ Normal');
+
+      animListHtml += '<div class="anim-result-card" style="animation-delay: ' + (k * 0.1) + 's; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">' +
+                        '<div>' +
+                          '<div style="font-weight:800; font-size:1.05rem; color:var(--ink);">' + esc(ut.name) + '</div>' +
+                          '<div style="font-size:0.85rem; color:var(--muted);">🎭 ' + esc(ut.teamName) + '</div>' +
+                        '</div>' +
+                        '<div style="padding:4px 12px; border-radius:6px; font-weight:700; font-size:0.9rem; ' + statusBadgeStyle + '">' + statusText + '</div>' +
+                      '</div>';
+    }
+
+    dlg.innerHTML = '<div style="text-align:center; padding:10px 0;">' +
+                      '<h3 style="color:var(--gold); font-size:1.4rem; margin-bottom:6px;">✨ Ergebnisse gespeichert!</h3>' +
+                      '<p class="hint">Übersicht der Aktualisierungen:</p>' +
+                      '<div style="max-height:280px; overflow-y:auto; text-align:left; margin-top:12px;">' + animListHtml + '</div>' +
+                    '</div>';
+
+    setTimeout(function(){
+      dlg.close();
+      ui.enter = true;
+      render();
+      // Highlight nach 3.2 Sekunden wieder entfernen (passend zur 3s CSS-Animation)
+      setTimeout(function(){
+        ui.highlightTalentIds = [];
+      }, 3200);
+    }, 1600);
+
+    return "keep";
   },
   
   openSeasonModal: function(el) { openSeasonModal(el.dataset.id || null); return "keep"; },
@@ -1436,7 +1540,8 @@ var A = {
         buzzers: buzzers,
         realTeamId: realTeamId,
         status: "active",
-        isAllStar: isAllStar
+        isAllStar: isAllStar,
+        isSteal: false
       });
 
       var currentStageIdx = cs.stages.findIndex(function(st){ return st.id === ui.tab; });
@@ -1455,7 +1560,8 @@ var A = {
               buzzers: buzzers,
               realTeamId: realTeamId,
               status: "active",
-              isAllStar: isAllStar
+              isAllStar: isAllStar,
+              isSteal: false
             });
           }
         }
@@ -1466,7 +1572,6 @@ var A = {
 };
 
 document.addEventListener("click", function(ev){
-  // Klicks für Fake Team Button Auswahl im Modal
   var fkBtn = ev.target.closest(".fk-pick-btn");
   if (fkBtn) {
     var groupF = document.querySelectorAll(".fk-pick-btn");
@@ -1478,7 +1583,6 @@ document.addEventListener("click", function(ev){
     if (valInpF) valInpF.value = fkBtn.dataset.teamid;
   }
 
-  // Klicks für Reale Team Button Auswahl im Modal
   var rtBtn = ev.target.closest(".rt-pick-btn");
   if (rtBtn) {
     var group = document.querySelectorAll(".rt-pick-btn");
@@ -1490,7 +1594,6 @@ document.addEventListener("click", function(ev){
     if (valInp) valInp.value = rtBtn.dataset.realid;
   }
 
-  // Klicks für Buzzer Button Auswahl im Modal
   var bzBtn = ev.target.closest(".bz-pick-btn");
   if (bzBtn) {
     var groupB = document.querySelectorAll(".bz-pick-btn");
@@ -1500,6 +1603,49 @@ document.addEventListener("click", function(ev){
     bzBtn.className = "primary bz-pick-btn";
     var valInpB = $("#tal_buzz_val");
     if (valInpB) valInpB.value = bzBtn.dataset.buzz;
+  }
+
+  // Klicks für die Status-Buttons im Battle-Modus (mit Toggle auf 'active' beim erneuten Klick)
+  var statusBtn = ev.target.closest(".status-btn");
+  if (statusBtn) {
+    var talId = statusBtn.dataset.talid;
+    var clickedStatus = statusBtn.dataset.status;
+    var hiddenInput = $("#status_val_" + talId);
+    if (!hiddenInput) return;
+
+    var currentVal = hiddenInput.value;
+    var newStatus = (currentVal === clickedStatus) ? 'active' : clickedStatus;
+
+    hiddenInput.value = newStatus;
+
+    var parentContainer = statusBtn.closest("div");
+    if (parentContainer) {
+      var allBtns = parentContainer.querySelectorAll(".status-btn");
+      for (var i = 0; i < allBtns.length; i++) {
+        var b = allBtns[i];
+        var bStatus = b.dataset.status;
+        b.className = "ghost status-btn";
+        if (bStatus === 'advanced') {
+          b.style.color = "var(--green)";
+          b.style.background = "transparent";
+        } else if (bStatus === 'eliminated') {
+          b.style.color = "var(--red)";
+          b.style.background = "transparent";
+        }
+      }
+    }
+
+    if (newStatus !== 'active') {
+      statusBtn.className = "primary status-btn";
+      statusBtn.style.color = "#fff";
+      if (newStatus === 'advanced') {
+        statusBtn.style.background = "var(--green)";
+        statusBtn.style.borderColor = "var(--green)";
+      } else if (newStatus === 'eliminated') {
+        statusBtn.style.background = "var(--red)";
+        statusBtn.style.borderColor = "var(--red)";
+      }
+    }
   }
 });
 
@@ -1535,39 +1681,6 @@ document.addEventListener("change", function(ev){
       }
     };
     reader.readAsText(file);
-  }
-
-  var radio = ev.target;
-  if(radio && radio.dataset && radio.dataset.statusRadio !== undefined) {
-    var talId = radio.dataset.talid;
-    var nameAttr = radio.getAttribute("name");
-    var groupLabels = document.querySelectorAll('input[name="' + nameAttr + '"]');
-    for(var k = 0; k < groupLabels.length; k++) {
-      var lbl = groupLabels[k].closest("label");
-      if(lbl) {
-        lbl.style.background = "transparent";
-        lbl.style.borderColor = "var(--line)";
-        lbl.style.color = "var(--ink)";
-        lbl.style.fontWeight = "normal";
-      }
-    }
-    var activeLbl = radio.closest("label");
-    if(activeLbl) {
-      if(radio.value === 'active') {
-        activeLbl.style.background = "rgba(255,209,102,0.1)";
-        activeLbl.style.borderColor = "var(--gold)";
-      } else if(radio.value === 'advanced') {
-        activeLbl.style.background = "rgba(46,204,113,0.15)";
-        activeLbl.style.borderColor = "var(--green)";
-        activeLbl.style.color = "var(--green)";
-        activeLbl.style.fontWeight = "600";
-      } else if(radio.value === 'eliminated') {
-        activeLbl.style.background = "rgba(230,42,42,0.15)";
-        activeLbl.style.borderColor = "var(--red)";
-        activeLbl.style.color = "var(--red)";
-        activeLbl.style.fontWeight = "600";
-      }
-    }
   }
 });
 
