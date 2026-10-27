@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@600;800&family=Outfit:wght@500;800&family=Plus+Jakarta+Sans:wght@500;700;800&family=Protest+Strike&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAH3SURBVHja7JVfSwJhEMefk/pXbU1qW22lP4RjL23p0x9ALx1oYIUhQZ96mZZqPZ5qUshc7lW6p+s6O7ubl4J4qT2n293Vvffunfn2nvd8E34iA9VqNcbj8eR9l9WwOqO5q5wA8EUAZ231t528O5W1z1t+0Z1vGv9X/8wR3c32r6O+f+a1682p/03+37m+w6V8Kz/Zz4EAAA==">
 <style>
 :root{
   --bg:#0a0505; --panel:#140808; --panel2:#1f0a0a; --line:#3d1414;
@@ -99,6 +98,41 @@ h3{font-family:var(--display);margin:0 0 12px}
 .season-card .s-meta { color:var(--muted); font-size:0.95rem; }
 .season-card .s-winner { margin-top:8px; display:inline-block; padding:4px 8px; background:rgba(255,209,102,0.1); color:var(--gold); border:1px solid rgba(255,209,102,0.3); border-radius:6px; font-weight:700; font-size:0.85rem;}
 
+.hall-of-fame {
+  background: linear-gradient(145deg, rgba(30, 20, 5, 0.9), rgba(15, 10, 2, 0.9));
+  border: 1px solid rgba(255, 209, 102, 0.4);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 32px;
+}
+.hof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.hof-item {
+  background: rgba(255, 209, 102, 0.05);
+  border: 1px solid rgba(255, 209, 102, 0.2);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hof-badge {
+  font-size: 1.8rem;
+}
+.hof-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--gold);
+}
+.hof-season {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 .team-header { 
   position: relative;
   padding-bottom: 8px; 
@@ -144,6 +178,19 @@ h3{font-family:var(--display);margin:0 0 12px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;}
 .tabs button{border-radius:999px;background:transparent}
 .tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+
+.search-bar-wrap {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.search-bar-wrap input {
+  flex: 1;
+  background: var(--panel);
+  border-color: var(--line);
+  font-size: 0.95rem;
+}
 
 .view-switch-container {
   display: flex;
@@ -356,7 +403,8 @@ var ui = {
   selectedTalents: [],
   mode: "fake",
   highlightTalentIds: [],
-  stealModeActive: false
+  stealModeActive: false,
+  searchQuery: ""
 };
 
 var $ = function(s) { return document.querySelector(s); };
@@ -597,6 +645,7 @@ function render() {
     ui.editMode = false;
     ui.selectedTalents = [];
     ui.stealModeActive = false;
+    ui.searchQuery = "";
     $("#header_tools").innerHTML = '';
     $("#app").innerHTML = homeView();
     if (floatingContainer) floatingContainer.innerHTML = '';
@@ -644,6 +693,9 @@ function homeView() {
   var sortedSeasons = S.seasons.slice().sort(function(a,b){ return b.year - a.year; });
   
   var cardsHtml = '';
+  var hofHtml = '';
+  var hasWinners = false;
+
   for (var i = 0; i < sortedSeasons.length; i++) {
     var s = sortedSeasons[i];
     var title = "The Voice " + esc(s.location);
@@ -656,9 +708,29 @@ function homeView() {
         '<div class="s-meta">' + meta + '</div>' +
         '<div><span class="s-winner">' + winnerLabel + '</span></div>' +
       '</div>';
+
+    if (s.winner && s.winner !== "TBD") {
+      hasWinners = true;
+      hofHtml += '<div class="hof-item">' +
+                   '<div class="hof-badge">🏆</div>' +
+                   '<div>' +
+                     '<div class="hof-name">' + esc(s.winner) + '</div>' +
+                     '<div class="hof-season">The Voice ' + esc(s.location) + ' (St. ' + esc(s.number) + ')</div>' +
+                   '</div>' +
+                 '</div>';
+    }
   }
 
   html += '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">' + cardsHtml + '</div>';
+
+  if (hasWinners) {
+    html += '<div class="hall-of-fame">' +
+              '<h3 style="color:var(--gold); margin-bottom:4px; display:flex; align-items:center; gap:8px;">🌟 Hall of Fame (Gewinner-Galerie)</h3>' +
+              '<p class="hint" style="margin-bottom:12px;">Alle Sieger aller Staffeln auf einen Blick.</p>' +
+              '<div class="hof-grid">' + hofHtml + '</div>' +
+            '</div>';
+  }
+
   return html;
 }
 
@@ -692,6 +764,11 @@ function seasonView(cs) {
     return html;
   }
 
+  html += '<div class="search-bar-wrap">' +
+            '<input type="text" id="talent_search_input" placeholder="🔍 Talent suchen..." value="' + esc(ui.searchQuery) + '" data-input="searchQuery">' +
+            (ui.searchQuery ? '<button class="ghost sm" data-act="clearSearch">✕</button>' : '') +
+          '</div>';
+
   var isFake = ui.mode === "fake";
   html += '<div class="view-switch-container">' +
             '<div class="view-switch">' +
@@ -711,10 +788,18 @@ function seasonView(cs) {
         .filter(function(t) { return t.stageId === prevStageId && (t.status === 'advanced' || t.isSteal); })
         .map(function(t) { return t.name.toLowerCase(); });
       
-      return stageTalents.filter(function(t) {
+      stageTalents = stageTalents.filter(function(t) {
         return prevAdvancedNames.includes(t.name.toLowerCase());
       });
     }
+
+    if (ui.searchQuery.trim()) {
+      var q = ui.searchQuery.trim().toLowerCase();
+      stageTalents = stageTalents.filter(function(t) {
+        return t.name.toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
     return stageTalents;
   }
 
@@ -766,7 +851,6 @@ function seasonView(cs) {
         
         var rowActionAttr = '';
         if (ui.editMode) {
-          // Im Edit-Mode ist die Zeile nicht klickbar, damit Buttons funktionieren
           rowActionAttr = '';
         } else if (ui.stealModeActive) {
           if (t.status === 'eliminated') {
@@ -804,11 +888,11 @@ function seasonView(cs) {
       }
 
       if (teamTalents.length === 0) {
-        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente in diesem Team</div>';
+        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente gefunden</div>';
       }
 
       var addBtnHtml = '';
-      if (currentStageIdx === 0) {
+      if (currentStageIdx === 0 && !ui.searchQuery) {
         addBtnHtml = '<button class="ghost sm add-btn-left" data-act="addTalent" data-team="'+team.id+'" title="Talent hinzufügen">＋</button>';
       }
 
@@ -908,7 +992,7 @@ function seasonView(cs) {
       }
 
       if (rtTalents.length === 0) {
-        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente in diesem Team</div>';
+        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente gefunden</div>';
       }
 
       var statsBadgeHtml = '<span style="color:var(--muted)">' + rtTalents.length + '</span>' +
@@ -1289,14 +1373,15 @@ function openCoachStatsModal() {
 
 // ---- Actions ----
 var A = {
-  goHome: function() { ui.view = "home"; ui.seasonId = null; ui.selectedTalents = []; ui.stealModeActive = false; ui.enter = true; return "render"; },
-  openSeason: function(el) { ui.seasonId = el.dataset.id; ui.view = "season"; ui.tab = null; ui.selectedTalents = []; ui.stealModeActive = false; ui.enter = true; return "render"; },
+  goHome: function() { ui.view = "home"; ui.seasonId = null; ui.selectedTalents = []; ui.stealModeActive = false; ui.searchQuery = ""; ui.enter = true; return "render"; },
+  openSeason: function(el) { ui.seasonId = el.dataset.id; ui.view = "season"; ui.tab = null; ui.selectedTalents = []; ui.stealModeActive = false; ui.searchQuery = ""; ui.enter = true; return "render"; },
   closeDlg: function() { dlg.close(); return "keep"; },
   setTab: function(el) { ui.tab = el.dataset.id; ui.selectedTalents = []; ui.stealModeActive = false; ui.enter = true; },
   setViewMode: function(el) { ui.mode = el.dataset.mode; ui.enter = true; },
   toggleEditMode: function() { ui.editMode = !ui.editMode; ui.enter = true; },
   toggleStealMode: function() { ui.stealModeActive = !ui.stealModeActive; ui.selectedTalents = []; ui.enter = true; },
   clearSelection: function() { ui.selectedTalents = []; ui.enter = true; return "render"; },
+  clearSearch: function() { ui.searchQuery = ""; render(); return "keep"; },
 
   toggleSelectTalent: function(el) {
     if (ui.editMode) return "keep";
@@ -1682,6 +1767,28 @@ var A = {
     save(); dlg.close(); ui.enter = true;
   }
 };
+
+document.addEventListener("input", function(ev){
+  if (ev.target.dataset.input === "searchQuery") {
+    ui.searchQuery = ev.target.value;
+    var appHtml = seasonView(currentSeason());
+    var container = $(".grid");
+    if (container) {
+      // Nur den Grid-Bereich und Zähler live aktualisieren, ohne den Input-Focus zu verlieren
+      var tempDiv = document.createElement('div');
+      tempDiv.innerHTML = appHtml;
+      var newGrid = tempDiv.querySelector('.grid');
+      if (newGrid) container.outerHTML = newGrid.outerHTML;
+      
+      // Statistiken in Team-Headern ebenfalls aktualisieren
+      var oldHeaders = document.querySelectorAll('.team-header .talent-count-right');
+      var newHeaders = tempDiv.querySelectorAll('.team-header .talent-count-right');
+      for (var i = 0; i < oldHeaders.length; i++) {
+        if (newHeaders[i]) oldHeaders[i].innerHTML = newHeaders[i].innerHTML;
+      }
+    }
+  }
+});
 
 document.addEventListener("click", function(ev){
   var fkBtn = ev.target.closest(".fk-pick-btn");
