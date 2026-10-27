@@ -6,7 +6,7 @@
 <title>The Voice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@600;800&family=Outfit:wght@500;800&family=Plus+Jakarta+Sans:wght@400;600;700&family=Protest+Strike&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@600;800&family=Outfit:wght@500;800&family=Plus+Jakarta+Sans:wght@500;700;800&family=Protest+Strike&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0a0505; --panel:#140808; --panel2:#1f0a0a; --line:#3d1414;
@@ -144,7 +144,6 @@ h3{font-family:var(--display);margin:0 0 12px}
 .tabs button{border-radius:999px;background:transparent}
 .tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
 
-/* Schieberegler (Toggle Switch) für Fake- vs Real-Teams */
 .view-switch-container {
   display: flex;
   justify-content: center;
@@ -212,31 +211,38 @@ h3{font-family:var(--display);margin:0 0 12px}
 
 .row-content{ display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; width:100%; }
 .meta{ display:flex; align-items: center; justify-content: center; gap: 6px; text-align: center; width: 100%; }
-.meta b{font-size:0.95rem; font-weight: 700; font-family: var(--body); color: var(--ink); line-height: 1.1;}
+/* Größere Schrift für Talent-Namen, Kachelgröße bleibt kompakt */
+.meta b{font-size:1.1rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.2;}
 
+/* Perfekt zentrierte, gut sichtbare Buzzer-Anzeige mit schwarzer Schrift */
 .badge-box {
-  background: var(--red);
-  color: #fff;
+  background: linear-gradient(135deg, #ffcd3c, #f5a623);
+  color: #000;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: 800;
-  font-size: 0.75rem;
-  display: inline-grid;
-  place-items: center;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: 'Jost', sans-serif;
-  min-width: 24px;
-  height: 24px;
+  min-width: 26px;
+  height: 26px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  border: 1px solid rgba(0,0,0,0.15);
+  line-height: 1;
 }
 
 .ace-symbol {
   font-size: 1.5rem;
   color: var(--gold);
-  display: inline-grid;
-  place-items: center;
-  min-width: 24px;
-  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
   line-height: 1;
-  text-shadow: 0 0 10px rgba(255, 209, 102, 0.4);
+  text-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
 }
 
 .floating-popup {
@@ -323,7 +329,7 @@ var ui = {
   editSeasonId: null,
   editMode: false,
   selectedTalents: [],
-  mode: "fake" // "fake" oder "real"
+  mode: "fake"
 };
 
 var $ = function(s) { return document.querySelector(s); };
@@ -650,7 +656,6 @@ function seasonView(cs) {
     return html;
   }
 
-  // Schieberegler für Fake-Teams vs Real Teams
   var isFake = ui.mode === "fake";
   html += '<div class="view-switch-container">' +
             '<div class="view-switch">' +
@@ -660,13 +665,31 @@ function seasonView(cs) {
           '</div>';
 
   var currentStageIdx = cs.stages.findIndex(function(st){ return st.id === ui.tab; });
+
+  // Automatisches Filtern ERST AB RUNDE 3 (Index >= 2), da Index 0 (Auditions) & Index 1 (meist Battles/Recall) alle übernehmen
+  function getFilteredStageTalents() {
+    var stageTalents = cs.talents.filter(function(t) { return t.stageId === ui.tab; });
+    if (currentStageIdx >= 2) {
+      var prevStageId = cs.stages[currentStageIdx - 1].id;
+      var prevAdvancedNames = cs.talents
+        .filter(function(t) { return t.stageId === prevStageId && t.status === 'advanced'; })
+        .map(function(t) { return t.name.toLowerCase(); });
+      
+      return stageTalents.filter(function(t) {
+        return prevAdvancedNames.includes(t.name.toLowerCase());
+      });
+    }
+    return stageTalents;
+  }
+
+  var activeStageTalents = getFilteredStageTalents();
   var gridHtml = '';
 
   if (isFake) {
     var activeTeams = cs.teams.slice(0, cs.teamCount);
     for (var i = 0; i < activeTeams.length; i++) {
       var team = activeTeams[i];
-      var teamTalents = cs.talents.filter(function(t) { return t.teamId === team.id && t.stageId === ui.tab; });
+      var teamTalents = activeStageTalents.filter(function(t) { return t.teamId === team.id; });
       var advCount = teamTalents.filter(function(t){ return t.status === 'advanced'; }).length;
       var elimCount = teamTalents.filter(function(t){ return t.status === 'eliminated'; }).length;
 
@@ -726,7 +749,7 @@ function seasonView(cs) {
       }
 
       if (teamTalents.length === 0) {
-        talentsHtml = '<div class="empty" style="padding:10px 0">Noch keine Talents</div>';
+        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente in diesem Team</div>';
       }
 
       var addBtnHtml = '';
@@ -756,11 +779,10 @@ function seasonView(cs) {
         '</div>';
     }
   } else {
-    // Real Teams Ansicht
     var realTeamsList = cs.realTeams || [];
     for (var i = 0; i < realTeamsList.length; i++) {
       var rt = realTeamsList[i];
-      var rtTalents = cs.talents.filter(function(t) { return t.realTeamId === rt.id && t.stageId === ui.tab; });
+      var rtTalents = activeStageTalents.filter(function(t) { return t.realTeamId === rt.id; });
       var advCount = rtTalents.filter(function(t){ return t.status === 'advanced'; }).length;
       var elimCount = rtTalents.filter(function(t){ return t.status === 'eliminated'; }).length;
 
@@ -804,7 +826,7 @@ function seasonView(cs) {
       }
 
       if (rtTalents.length === 0) {
-        talentsHtml = '<div class="empty" style="padding:10px 0">Noch keine Talente in diesem Team</div>';
+        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente in diesem Team</div>';
       }
 
       var statsBadgeHtml = '<span style="color:var(--muted)">' + rtTalents.length + '</span>' +
@@ -1054,7 +1076,7 @@ function openStealModal() {
   }
 
   dlg.innerHTML = '<h3>🔄 Steal-Deal durchführen</h3>' +
-    '<p class="hint">Wähle ein ausgeschiedenes Talent und weise es einem neuen Coach / Fake-Team zu.</p>' +
+    '<p class="hint">Wähle ein ausgeschiedenes Talent und weise er ein neues Fake-Team / einen neuen Coach zu.</p>' +
     '<label>Ausgeschiedenes Talent<select id="steal_talent_sel">' + talentOpts + '</select></label>' +
     '<label>Neuer Realer Coach / Team<select id="steal_real">' + realTeamOpts + '</select></label>' +
     '<label>Neues Fake-Team<select id="steal_team">' + teamOpts + '</select></label>' +
