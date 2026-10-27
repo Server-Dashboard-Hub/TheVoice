@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Voice Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;800&family=Plus+Jakarta+Sans:wght@400;600;700&family=Protest+Strike&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0505; --panel:#140808; --panel2:#1f0a0a; --line:#3d1414;
+  --ink:#f8f5ff; --muted:#a99494; --red:#e62a2a; --gold:#ffd166;
+  --display:"Outfit","Segoe UI",system-ui,sans-serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --number-font:"Protest Strike", sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  margin:0;font-family:var(--body);color:var(--ink);background:
+  radial-gradient(900px 420px at 50% -10%,rgba(230,42,42,.15),transparent 60%),
+  radial-gradient(700px 380px at 10% 20%,rgba(255,209,102,.08),transparent 60%),var(--bg);
+  min-height:100vh;line-height:1.42; overflow-x:hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  background: 
+    radial-gradient(900px 420px at 30% 10%, rgba(230,42,42,.12), transparent 60%),
+    radial-gradient(800px 400px at 80% 70%, rgba(255,209,102,.05), transparent 60%);
+  animation: bgFloat 14s ease-in-out infinite alternate;
+}
+@keyframes bgFloat {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-25px) scale(1.04); }
+  100% { transform: translateY(20px) scale(0.97); }
+}
+
+#app { transition: opacity 0.3s ease; }
+#app.enter { animation: popIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes popIn {
+  0% { opacity: 0; transform: translateY(10px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.wrap{max-width:1600px;margin:0 auto;padding:0 16px 80px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:.01em; color:var(--red); cursor:pointer;}
+.who{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.9rem}
+.net{font-size:.8rem}
+
+select,input{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-width:100%; transition: border-color 0.2s ease;}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+button{
+  font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:6px 12px;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease,filter .2s ease,background-color .2s ease,opacity .2s ease,border-color .2s ease;
+}
+button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 16px rgba(230,42,42,.25)}
+button:active:not(:disabled){transform:scale(.92);box-shadow:none}
+
+button.primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+button.ghost{background:transparent}
+button.danger{color:#ffb3b3}
+button:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+.hero{
+  font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,6vw,4rem);line-height:1.05;margin:32px 0 16px;letter-spacing:-.02em;
+  background:linear-gradient(135deg, #ff4d4d 0%, #e62a2a 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+h2{font-family:var(--display);font-size:1.5rem;margin:0}
+h3{font-family:var(--display);margin:0 0 12px}
+.hint{color:var(--muted);margin:0 0 14px;font-size:.9rem}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:20px; align-items:start;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+
+.season-card { cursor:pointer; display:flex; flex-direction:column; gap:8px; padding:24px; min-height:140px; justify-content:center; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease;}
+.season-card:hover { transform:translateY(-6px); box-shadow:0 12px 24px rgba(0,0,0,0.4); border-color:var(--red); }
+.season-card:active { transform:scale(0.96); }
+.season-card .s-title { font-family:var(--display); font-size:1.8rem; font-weight:800; color:var(--ink); line-height:1.1; }
+.season-card .s-meta { color:var(--muted); font-size:0.95rem; }
+.season-card .s-winner { margin-top:8px; display:inline-block; padding:4px 8px; background:rgba(255,209,102,0.1); color:var(--gold); border:1px solid rgba(255,209,102,0.3); border-radius:6px; font-weight:700; font-size:0.85rem;}
+
+.team-header { padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
+.team-header h3 { margin: 0; font-size: 1.3rem; color: var(--gold); }
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tabs button{border-radius:999px;background:transparent}
+.tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+
+@keyframes simpleFadeUp { 
+  from { opacity: 0; transform: translateY(8px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+.row{
+  position: relative;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:12px;
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  align-items:center;
+  animation: simpleFadeUp 0.3s ease-out backwards;
+  margin-bottom: 8px;
+}
+
+.row-content{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.meta{ display:flex; align-items: center; gap: 8px; }
+.meta b{font-size:1.1rem; font-weight: 800; font-family: var(--display); color: var(--ink); line-height: 1.2;}
+
+.tile{
+  width:44px;
+  height:48px;
+  border-radius:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:rgba(230,42,42,0.1);
+  border:1px solid var(--red);
+  color:var(--red);
+  line-height:1;
+  overflow:hidden;
+}
+.tile b{ font-family:var(--number-font); font-size:1.4rem; letter-spacing:0.05em; }
+.tile small{ font-size:0.5rem; font-weight:800; letter-spacing: 0.05em; text-transform: uppercase; }
+
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+dialog{
+  background:var(--panel);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:24px;
+  width:min(480px,92vw);
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+dialog::backdrop{background:rgba(5,2,5,.85);backdrop-filter:blur(4px);animation:fadeIn .25s ease}
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+dialog label{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;color:var(--muted);font-size:.9rem}
+dialog input,dialog select{width:100%}
+
+.empty{color:var(--muted);padding:20px 0; text-align: center; font-size: 0.95rem;}
+.sm{padding:2px 8px;font-size:0.75rem}
+.stage-item { display:flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.stage-item input { flex: 1; }
+
+.header-actions { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand" data-act="goHome">🎙️ THE VOICE SETUP</div>
+    <div class="who">
+      <span id="net" class="net"></span>
+      <div id="header_tools"></div>
+    </div>
+  </header>
+  <div id="app"></div>
+</div>
+<dialog id="dlg"></dialog>
+
+<script>
+var DB = "https://thevoice-e515f-default-rtdb.europe-west1.firebasedatabase.app".replace(/\/+$/,"");
+var lastFlat = {}, busy = 0, net = DB ? "connecting" : "local";
+var netText = function(){ return {local:"Lokal",connecting:"Verbindet…",online:"● Geteilt",error:"Offline"}[net]; };
+var badge = function(){ var n = $("#net"); if(n) n.textContent = netText(); };
+
+var fresh = function() {
+  return { seasons: [] };
+};
+
+var S = fresh();
+
+var ui = { 
+  view: "home", 
+  seasonId: null, 
+  tab: null, 
+  enter: false, 
+  editTalent: null,
+  editSeasonId: null
+};
+
+var $ = function(s) { return document.querySelector(s); };
+var esc = function(s) { return String(s ? s : "").replace(/[&<>"']/g, function(c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+
+function save() {
+  try { localStorage.setItem("voice-setup-db", JSON.stringify(S)); } catch(e) {}
+  push();
+}
+
+// Firebase Sync Funktionen
+function toTree() {
+  var t = { seasons: {} };
+  for(var i=0; i<S.seasons.length; i++){
+    var s = S.seasons[i];
+    var seasonsObj = {
+      location: s.location,
+      number: s.number,
+      year: s.year,
+      winner: s.winner,
+      teamCount: s.teamCount,
+      teams: {},
+      stages: {},
+      talents: {}
+    };
+    for(var j=0; j<s.teams.length; j++){
+      seasonsObj.teams[s.teams[j].id] = { name: s.teams[j].name };
+    }
+    for(var j=0; j<s.stages.length; j++){
+      seasonsObj.stages[s.stages[j].id] = { name: s.stages[j].name };
+    }
+    for(var j=0; j<s.talents.length; j++){
+      var tal = s.talents[j];
+      seasonsObj.talents[tal.id] = {
+        stageId: tal.stageId,
+        teamId: tal.teamId,
+        name: tal.name,
+        buzzers: tal.buzzers,
+        realTeam: tal.realTeam || "",
+        realInitial: tal.realInitial || ""
+      };
+    }
+    t.seasons[s.id] = seasonsObj;
+  }
+  return t;
+}
+
+function flat(o,p,out){
+  p=p||""; out=out||{};
+  for(var k in o){
+    var v=o[k],q=p?p+"/"+k:k;
+    if(v&&typeof v==="object")flat(v,q,out);
+    else if(v!==undefined&&v!==null&&v!=="")out[q]=v;
+  }
+  return out;
+}
+
+function fromTree(t) {
+  var r = fresh();
+  var tSeasons = t.seasons || {};
+  for(var id in tSeasons){
+    if(tSeasons.hasOwnProperty(id)){
+      var o = tSeasons[id];
+      var teams = [];
+      if(o.teams){
+        for(var tid in o.teams){
+          teams.push({ id: tid, name: o.teams[tid].name });
+        }
+      }
+      var stages = [];
+      if(o.stages){
+        for(var sid in o.stages){
+          stages.push({ id: sid, name: o.stages[sid].name });
+        }
+      }
+      var talents = [];
+      if(o.talents){
+        for(var talid in o.talents){
+          var tal = o.talents[talid];
+          talents.push({
+            id: talid,
+            stageId: tal.stageId,
+            teamId: tal.teamId,
+            name: tal.name,
+            buzzers: tal.buzzers,
+            realTeam: tal.realTeam || "",
+            realInitial: tal.realInitial || ""
+          });
+        }
+      }
+      r.seasons.push({
+        id: id,
+        location: o.location || "Germany",
+        number: o.number || 1,
+        year: o.year || 2026,
+        winner: o.winner || "TBD",
+        teamCount: o.teamCount || 4,
+        teams: teams.length ? teams : [{id: "t1", name: "Team 1"}, {id: "t2", name: "Team 2"}, {id: "t3", name: "Team 3"}, {id: "t4", name: "Team 4"}],
+        stages: stages.length ? stages : [{id: "s1", name: "Blind Auditions"}, {id: "s2", name: "Battles"}],
+        talents: talents
+      });
+    }
+  }
+  r.seasons.sort(function(a,b){ return b.year - a.year; });
+  return r;
+}
+
+function same(a,b){
+  var k=Object.keys(a); if(k.length !== Object.keys(b).length) return false;
+  for(var i=0; i<k.length; i++){ if(a[k[i]] !== b[k[i]]) return false; }
+  return true;
+}
+
+function push(){
+  if(!DB)return;
+  var cur=flat(toTree()),p={};
+  for(var k in cur)if(cur[k]!==lastFlat[k])p[k]=cur[k];
+  for(var k in lastFlat)if(!(k in cur))p[k]=null;
+  if(!Object.keys(p).length)return;
+  var prev=lastFlat;lastFlat=cur;busy++;
+  fetch(DB+"/.json",{method:"PATCH",body:JSON.stringify(p)}).then(function(r){if(!r.ok)throw 0;net="online";}).catch(function(){lastFlat=prev;net="error";}).finally(function(){busy--;badge();});
+}
+
+function pull(first){
+  if(!DB||busy)return;
+  fetch(DB+"/.json").then(function(res){return res.json();}).then(function(t){
+    net="online";
+    if(!t){if(first===true)push();badge();return;}
+    var f=flat(t);
+    if(same(f,lastFlat)){badge();return;}
+    var a=document.activeElement;
+    if(first!==true&&(dlg.open||(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))))return;
+    S=fromTree(t);lastFlat=f;
+    try{localStorage.setItem("voice-setup-db",JSON.stringify(S));}catch(e){}
+    render();
+  }).catch(function(){net="error";badge();});
+}
+
+// Lokale Daten als Initialisierung laden
+try {
+  var localData = JSON.parse(localStorage.getItem("voice-setup-db"));
+  if (localData && localData.seasons) S = localData;
+} catch(e) {}
+
+function currentSeason() {
+  if (!ui.seasonId) return null;
+  return S.seasons.find(function(s){ return s.id === ui.seasonId; });
+}
+
+function createDefaultSeason(location, number, year, winner) {
+  return {
+    id: "season_" + Date.now(),
+    location: location,
+    number: number,
+    year: year,
+    winner: winner || "TBD",
+    teamCount: 4,
+    teams: [
+      {id: "t1", name: "Team 1"},
+      {id: "t2", name: "Team 2"},
+      {id: "t3", name: "Team 3"},
+      {id: "t4", name: "Team 4"},
+      {id: "t5", name: "Team 5"}
+    ],
+    stages: [
+      {id: "s1", name: "Blind Auditions"},
+      {id: "s2", name: "Battles"}
+    ],
+    talents: []
+  };
+}
+
+var dlg = $("#dlg");
+dlg.addEventListener("close", function() { render(); });
+
+function render() {
+  if (ui.enter) {
+    var app = $("#app");
+    app.classList.remove("enter"); 
+    void app.offsetWidth; 
+    app.classList.add("enter");
+  }
+  ui.enter = false;
+  badge();
+  
+  if (ui.view === "home") {
+    $("#header_tools").innerHTML = '';
+    $("#app").innerHTML = homeView();
+  } else if (ui.view === "season") {
+    var cs = currentSeason();
+    if (!cs) { ui.view = "home"; render(); return; }
+    if (!ui.tab && cs.stages.length > 0) ui.tab = cs.stages[0].id;
+    
+    $("#header_tools").innerHTML = '<button class="ghost" data-act="openSettings" style="border-color:var(--line)">⚙️ Einstellungen</button>';
+    $("#app").innerHTML = seasonView(cs);
+  }
+}
+
+function homeView() {
+  var html = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">' +
+             '<h1 class="hero" style="margin:24px 0">Alle Staffeln</h1>' +
+             '<button class="primary" data-act="openSeasonModal" style="font-size:1.1rem; padding:10px 20px">＋ Neue Staffel</button>' +
+             '</div>';
+  
+  if (S.seasons.length === 0) {
+    html += '<p class="empty" style="font-size:1.1rem; margin-top:40px;">Noch keine Staffeln angelegt. Klicke auf "Neue Staffel", um zu beginnen.</p>';
+    return html;
+  }
+
+  var sortedSeasons = S.seasons.slice().sort(function(a,b){ return b.year - a.year; });
+  
+  var cardsHtml = '';
+  for (var i = 0; i < sortedSeasons.length; i++) {
+    var s = sortedSeasons[i];
+    var title = "The Voice " + esc(s.location);
+    var meta = "Staffel " + esc(s.number) + " (" + esc(s.year) + ")";
+    var winnerLabel = s.winner && s.winner !== "TBD" ? "🏆 Gewinner: " + esc(s.winner) : "Gewinner: TBD";
+    
+    cardsHtml += 
+      '<div class="card season-card" data-act="openSeason" data-id="'+s.id+'">' +
+        '<div class="s-title">' + title + '</div>' +
+        '<div class="s-meta">' + meta + '</div>' +
+        '<div><span class="s-winner">' + winnerLabel + '</span></div>' +
+      '</div>';
+  }
+
+  html += '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">' + cardsHtml + '</div>';
+  return html;
+}
+
+function seasonView(cs) {
+  var title = "The Voice " + esc(cs.location) + " - Staffel " + esc(cs.number) + " (" + esc(cs.year) + ")";
+  
+  var html = '<div class="header-actions">' +
+               '<button class="ghost" data-act="goHome">← Alle Staffeln</button>' +
+               '<button class="ghost" data-act="openSeasonModal" data-id="'+cs.id+'">✏️ Staffel bearbeiten</button>' +
+               '<button class="ghost danger" data-act="delSeason" data-id="'+cs.id+'">🗑️ Löschen</button>' +
+             '</div>' +
+             '<h1 class="hero" style="margin:10px 0 16px; font-size:clamp(2rem,5vw,3rem);">' + title + '</h1>';
+             
+  if (cs.winner && cs.winner !== "TBD") {
+    html += '<p style="color:var(--gold); font-weight:700; font-size:1.1rem; margin-top:0;">🏆 Gewinner: ' + esc(cs.winner) + '</p>';
+  }
+
+  if (cs.stages.length > 0) {
+    var tabsHtml = '';
+    for (var i = 0; i < cs.stages.length; i++) {
+      var st = cs.stages[i];
+      var isOn = ui.tab === st.id ? "on" : "";
+      tabsHtml += '<button class="'+isOn+'" data-act="setTab" data-id="'+st.id+'">'+esc(st.name)+'</button>';
+    }
+    html += '<div class="tabs" style="margin-top:24px;">' + tabsHtml + '</div>';
+  } else {
+    html += '<p class="empty">Keine Abschnitte vorhanden. Gehe in die Einstellungen.</p>';
+    return html;
+  }
+
+  var activeTeams = cs.teams.slice(0, cs.teamCount);
+  var gridHtml = '';
+
+  for (var i = 0; i < activeTeams.length; i++) {
+    var team = activeTeams[i];
+    
+    var teamTalents = cs.talents.filter(function(t) { return t.teamId === team.id && t.stageId === ui.tab; });
+    var talentsHtml = '';
+    
+    for (var j = 0; j < teamTalents.length; j++) {
+      var t = teamTalents[j];
+      
+      var initialBadge = '';
+      if (t.realInitial) {
+        var tooltipAttr = t.realTeam ? ' title="Realer Coach: ' + esc(t.realTeam) + '"' : '';
+        initialBadge = '<span style="background:var(--red); color:#fff; padding:2px 6px; border-radius:4px; font-weight:800; font-size:0.75rem; display:inline-grid; place-items:center;"' + tooltipAttr + '>' + esc(t.realInitial) + '</span>';
+      }
+
+      talentsHtml += 
+        '<div class="row">' +
+          '<div class="row-content">' +
+            '<div class="meta">' +
+              initialBadge +
+              '<b>' + esc(t.name) + '</b>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;margin-top:4px;">' +
+              '<button class="ghost sm" data-act="editTalent" data-id="'+t.id+'">✏️ Edit</button>' +
+              '<button class="ghost sm danger" data-act="delTalent" data-id="'+t.id+'">Löschen</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="stats">' +
+            '<div class="tile" title="Buzzers"><b>'+t.buzzers+'</b><small>Buzzer</small></div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    if (teamTalents.length === 0) {
+      talentsHtml = '<div class="empty" style="padding:10px 0">Noch keine Talents</div>';
+    }
+
+    gridHtml += 
+      '<div class="card">' +
+        '<div class="team-header">' +
+          '<h3>' + esc(team.name) + '</h3>' +
+          '<span style="color:var(--muted);font-weight:700;font-size:0.9rem">'+teamTalents.length+' Talents</span>' +
+        '</div>' +
+        '<div class="list" style="margin-bottom:12px;">' + talentsHtml + '</div>' +
+        '<button class="ghost" style="width:100%; border-style:dashed;" data-act="addTalent" data-team="'+team.id+'">＋ Talent hinzufügen</button>' +
+      '</div>';
+  }
+
+  html += '<div class="grid">' + gridHtml + '</div>';
+  return html;
+}
+
+// ---- Modals ----
+
+function openSeasonModal(editId) {
+  var s = null;
+  if (editId) {
+    ui.editSeasonId = editId;
+    s = S.seasons.find(function(x) { return x.id === editId; });
+  } else {
+    ui.editSeasonId = null;
+  }
+
+  var dYear = new Date().getFullYear();
+  dlg.innerHTML = '<h3>' + (s ? 'Staffel bearbeiten' : 'Neue Staffel anlegen') + '</h3>' +
+    '<label>Ort / Land (z.B. Germany, US)<input id="sea_loc" value="'+esc(s?s.location:"Germany")+'"></label>' +
+    '<label>Staffel Nummer<input type="number" id="sea_num" value="'+esc(s?s.number:"1")+'"></label>' +
+    '<label>Jahr<input type="number" id="sea_year" value="'+esc(s?s.year:dYear)+'"></label>' +
+    '<label>Gewinner (Optional)<input id="sea_winner" value="'+esc((s && s.winner !== "TBD") ? s.winner : "")+'" placeholder="TBD"></label>' +
+    '<div class="actions" style="margin-top:20px;">' +
+      '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
+      '<button class="primary" data-act="saveSeason">Speichern</button>' +
+    '</div>';
+  
+  if (!dlg.open) dlg.showModal();
+}
+
+function openSettingsModal() {
+  var cs = currentSeason();
+  if (!cs) return;
+
+  var tcOpts = '';
+  for(var i = 2; i <= 5; i++) {
+    tcOpts += '<option value="'+i+'" '+(cs.teamCount===i?'selected':'')+'>'+i+' Teams</option>';
+  }
+
+  var teamsHtml = '';
+  for(var i = 0; i < 5; i++) {
+    var isHidden = i >= cs.teamCount ? 'style="display:none;"' : '';
+    var teamObj = cs.teams[i] || {name: "Team " + (i+1)};
+    teamsHtml += '<label '+isHidden+' class="team-name-input">Name Team '+(i+1)+'<input id="tname_'+i+'" value="'+esc(teamObj.name)+'"></label>';
+  }
+
+  var stagesHtml = '';
+  for(var i = 0; i < cs.stages.length; i++) {
+    var st = cs.stages[i];
+    stagesHtml += '<div class="stage-item">' +
+      '<input type="text" id="stname_'+st.id+'" value="'+esc(st.name)+'">' +
+      '<button class="ghost danger" data-act="delStage" data-id="'+st.id+'">✕</button>' +
+    '</div>';
+  }
+
+  dlg.innerHTML = '<h2>⚙️ Einstellungen</h2>' +
+    '<p class="hint">Diese Einstellungen gelten nur für diese Staffel.</p>' +
+    '<hr style="border:0;border-bottom:1px solid var(--line);margin:16px 0">' +
+    '<h3>Teams</h3>' +
+    '<label>Anzahl der Teams<select id="set_tc" data-chg="teamCount">' + tcOpts + '</select></label>' +
+    '<div id="team_names_container">' + teamsHtml + '</div>' +
+    
+    '<hr style="border:0;border-bottom:1px solid var(--line);margin:24px 0 16px">' +
+    '<h3>Abschnitte (Stages)</h3>' +
+    '<p class="hint">Z.B. Blind Auditions, Battles, Sing-Offs...</p>' +
+    '<div id="stages_container">' + stagesHtml + '</div>' +
+    '<button class="ghost" data-act="addStage">＋ Abschnitt hinzufügen</button>' +
+
+    '<div class="actions" style="margin-top:24px;justify-content:flex-end;">' +
+      '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
+      '<button class="primary" data-act="saveSettings">Speichern</button>' +
+    '</div>';
+  
+  if (!dlg.open) dlg.showModal();
+}
+
+function openTalentModal(teamId, editId) {
+  var cs = currentSeason();
+  if (!cs) return;
+
+  var t = null;
+  if (editId) {
+    ui.editTalent = editId;
+    t = cs.talents.find(function(x){ return x.id === editId; });
+    teamId = t.teamId;
+  } else {
+    ui.editTalent = null;
+  }
+
+  var teamOpts = '';
+  var activeTeams = cs.teams.slice(0, cs.teamCount);
+  for(var i=0; i<activeTeams.length; i++){
+    teamOpts += '<option value="'+activeTeams[i].id+'" '+(activeTeams[i].id===teamId?'selected':'')+'>'+esc(activeTeams[i].name)+'</option>';
+  }
+
+  var buzzOpts = '';
+  for(var i=1; i<=cs.teamCount; i++){
+    var sel = (t && t.buzzers === i) || (!t && i === 1) ? 'selected' : '';
+    buzzOpts += '<option value="'+i+'" '+sel+'>'+i+' Buzzer</option>';
+  }
+
+  dlg.innerHTML = '<h3>'+(t ? 'Talent bearbeiten' : 'Neues Talent')+'</h3>' +
+    '<label>Name des Talents<input id="tal_name" value="'+esc(t?t.name:"")+'" placeholder="Max Mustermann"></label>' +
+    '<div style="display:flex;gap:12px;">' +
+      '<label style="flex:1">Realer Coach / Team<input id="tal_real" value="'+esc(t?t.realTeam:"")+'" placeholder="z.B. Team Mark"></label>' +
+      '<label style="width:110px">Kürzel (Anzeige)<input id="tal_init" value="'+esc(t?t.realInitial:"")+'" placeholder="M" maxlength="3"></label>' +
+    '</div>' +
+    '<div style="display:flex;gap:12px;margin-top:12px;">' +
+      '<label style="flex:1">Fake-Team<select id="tal_team">' + teamOpts + '</select></label>' +
+      '<label style="flex:1">Buzzer erhalten<select id="tal_buzz">' + buzzOpts + '</select></label>' +
+    '</div>' +
+    '<div class="actions" style="margin-top:16px;">' +
+      '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
+      '<button class="primary" data-act="saveTalent">Speichern</button>' +
+    '</div>';
+  
+  if (!dlg.open) dlg.showModal();
+}
+
+// ---- Actions ----
+var A = {
+  goHome: function() { ui.view = "home"; ui.seasonId = null; ui.enter = true; return "render"; },
+  openSeason: function(el) { ui.seasonId = el.dataset.id; ui.view = "season"; ui.tab = null; ui.enter = true; return "render"; },
+  closeDlg: function() { dlg.close(); return "keep"; },
+  setTab: function(el) { ui.tab = el.dataset.id; ui.enter = true; },
+  
+  openSeasonModal: function(el) { openSeasonModal(el.dataset.id || null); return "keep"; },
+  saveSeason: function() {
+    var loc = $("#sea_loc").value.trim() || "Unbekannt";
+    var num = parseInt($("#sea_num").value) || 1;
+    var yr = parseInt($("#sea_year").value) || new Date().getFullYear();
+    var win = $("#sea_winner").value.trim() || "TBD";
+    
+    if (ui.editSeasonId) {
+      var s = S.seasons.find(function(x) { return x.id === ui.editSeasonId; });
+      if (s) { s.location = loc; s.number = num; s.year = yr; s.winner = win; }
+    } else {
+      var newS = createDefaultSeason(loc, num, yr, win);
+      S.seasons.push(newS);
+    }
+    save(); dlg.close(); ui.enter = true; return "render";
+  },
+  delSeason: function(el) {
+    if(confirm("Diese komplette Staffel inklusive aller Talents wirklich löschen?")) {
+      var id = el.dataset.id;
+      S.seasons = S.seasons.filter(function(s){ return s.id !== id; });
+      save(); ui.view = "home"; ui.seasonId = null; ui.enter = true; return "render";
+    }
+    return "keep";
+  },
+
+  openSettings: function() { openSettingsModal(); return "keep"; },
+  addStage: function() {
+    var cs = currentSeason();
+    if (cs) cs.stages.push({id: "s" + Date.now(), name: "Neuer Abschnitt"});
+    openSettingsModal(); return "keep";
+  },
+  delStage: function(el) {
+    var cs = currentSeason();
+    if(cs && confirm("Abschnitt wirklich löschen? Alle zugehörigen Talents gehen verloren!")) {
+      var id = el.dataset.id;
+      cs.stages = cs.stages.filter(function(st){ return st.id !== id; });
+      cs.talents = cs.talents.filter(function(tal){ return tal.stageId !== id; });
+      if(ui.tab === id) ui.tab = cs.stages.length > 0 ? cs.stages[0].id : null;
+      openSettingsModal();
+    }
+    return "keep";
+  },
+  saveSettings: function() {
+    var cs = currentSeason();
+    if (!cs) return "keep";
+
+    cs.teamCount = parseInt($("#set_tc").value) || 4;
+    for(var i = 0; i < 5; i++) {
+      var inp = $("#tname_" + i);
+      if(inp) cs.teams[i].name = inp.value.trim() || ("Team " + (i+1));
+    }
+    for(var i = 0; i < cs.stages.length; i++) {
+      var inp = $("#stname_" + cs.stages[i].id);
+      if(inp) cs.stages[i].name = inp.value.trim() || "Unbenannt";
+    }
+    save(); dlg.close(); ui.enter = true;
+  },
+
+  addTalent: function(el) { openTalentModal(el.dataset.team, null); return "keep"; },
+  editTalent: function(el) { openTalentModal(null, el.dataset.id); return "keep"; },
+  delTalent: function(el) {
+    var cs = currentSeason();
+    if(cs && confirm("Talent wirklich löschen?")) {
+      cs.talents = cs.talents.filter(function(t){ return t.id !== el.dataset.id; });
+      save(); return "render";
+    }
+    return "keep";
+  },
+  saveTalent: function() {
+    var cs = currentSeason();
+    if (!cs) return "keep";
+
+    var name = $("#tal_name").value.trim();
+    var realTeam = $("#tal_real").value.trim();
+    var realInitial = $("#tal_init").value.trim();
+    var teamId = $("#tal_team").value;
+    var buzzers = parseInt($("#tal_buzz").value) || 1;
+    
+    if(!name) { alert("Bitte einen Namen eingeben."); return "keep"; }
+
+    if (ui.editTalent) {
+      var t = cs.talents.find(function(x){ return x.id === ui.editTalent; });
+      if(t) {
+        t.name = name; 
+        t.teamId = teamId; 
+        t.buzzers = buzzers;
+        t.realTeam = realTeam;
+        t.realInitial = realInitial;
+      }
+    } else {
+      cs.talents.push({
+        id: "tal" + Date.now(),
+        stageId: ui.tab,
+        teamId: teamId,
+        name: name,
+        buzzers: buzzers,
+        realTeam: realTeam,
+        realInitial: realInitial
+      });
+    }
+    save(); dlg.close(); ui.enter = true;
+  }
+};
+
+document.addEventListener("change", function(ev){
+  if(ev.target.dataset.chg === "teamCount") {
+    var count = parseInt(ev.target.value);
+    var labels = document.querySelectorAll(".team-name-input");
+    for(var i = 0; i < labels.length; i++) {
+      labels[i].style.display = i < count ? "flex" : "none";
+    }
+  }
+});
+
+document.addEventListener("click", function(ev) {
+  var t = ev.target.closest("[data-act]"); 
+  if(!t || !A[t.dataset.act]) return;
+  var r = A[t.dataset.act](t);
+  if(r !== "keep") render();
+});
+
+// App starten und Firebase-Sync triggern
+render();
+if(DB){ pull(true); setInterval(pull, 4000); }
+</script>
+</body>
+</html>
