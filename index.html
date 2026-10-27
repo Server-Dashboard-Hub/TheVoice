@@ -317,7 +317,7 @@ function toTree() {
     if (s.realTeams) {
       for(var j=0; j<s.realTeams.length; j++){
         var rt = s.realTeams[j];
-        seasonsObj.realTeams[rt.id] = { name: rt.name, initial: rt.initial };
+        seasonsObj.realTeams[rt.id] = { name: rt.name, initial: rt.initial, color: rt.color || "#e62a2a" };
       }
     }
     for(var j=0; j<s.stages.length; j++){
@@ -365,7 +365,7 @@ function fromTree(t) {
       var realTeams = [];
       if(o.realTeams){
         for(var rtid in o.realTeams){
-          realTeams.push({ id: rtid, name: o.realTeams[rtid].name, initial: o.realTeams[rtid].initial });
+          realTeams.push({ id: rtid, name: o.realTeams[rtid].name, initial: o.realTeams[rtid].initial, color: o.realTeams[rtid].color || "#e62a2a" });
         }
       }
       var stages = [];
@@ -464,8 +464,8 @@ function createDefaultSeason(location, number, year, winner) {
       {id: "t4", name: "Team 4"}
     ],
     realTeams: [
-      {id: "rt1", name: "Team Shirin David", initial: "S"},
-      {id: "rt2", name: "Team Mark Forster", initial: "M"}
+      {id: "rt1", name: "Team Shirin David", initial: "S", color: "#e62a2a"},
+      {id: "rt2", name: "Team Mark Forster", initial: "M", color: "#ffd166"}
     ],
     stages: [
       {id: "s1", name: "Blind Auditions"},
@@ -631,7 +631,8 @@ function seasonView(cs) {
         var rt = cs.realTeams.find(function(x){ return x.id === t.realTeamId; });
         if (rt && rt.initial) {
           var tooltipAttr = rt.name ? ' title="Realer Coach: ' + esc(rt.name) + '"' : '';
-          initialBadge = '<span class="badge-box"' + tooltipAttr + '>' + esc(rt.initial) + '</span>';
+          var boxColor = rt.color || '#e62a2a';
+          initialBadge = '<span class="badge-box" style="background:' + boxColor + '; color:#000;"' + tooltipAttr + '>' + esc(rt.initial) + '</span>';
         }
       }
 
@@ -748,9 +749,15 @@ function syncSettingsFromDOM() {
   for(var i = 0; i < rtItems.length; i++) {
     var nameInp = rtItems[i].querySelector(".rt-name");
     var initInp = rtItems[i].querySelector(".rt-init");
+    var colorInp = rtItems[i].querySelector(".rt-color");
     if(nameInp) {
       var rtid = rtItems[i].dataset.rtid || ("rt_" + Date.now() + "_" + i);
-      updatedRealTeams.push({ id: rtid, name: nameInp.value.trim(), initial: initInp ? initInp.value.trim() : "" });
+      updatedRealTeams.push({ 
+        id: rtid, 
+        name: nameInp.value.trim(), 
+        initial: initInp ? initInp.value.trim() : "",
+        color: colorInp ? colorInp.value : "#e62a2a"
+      });
     }
   }
   cs.realTeams = updatedRealTeams;
@@ -781,7 +788,9 @@ function openSettingsModal() {
   if (!cs.realTeams) cs.realTeams = [];
   for(var i = 0; i < cs.realTeams.length; i++) {
     var rt = cs.realTeams[i];
+    var rtColor = rt.color || "#e62a2a";
     realTeamsHtml += '<div class="stage-item" data-rtid="'+rt.id+'">' +
+      '<input type="color" class="rt-color" value="'+rtColor+'" title="Farbe wählen" style="width:42px; height:38px; padding:2px; cursor:pointer;">' +
       '<input type="text" class="rt-name" value="'+esc(rt.name)+'" placeholder="Reales Team (z.B. Team Shirin)">' +
       '<input type="text" class="rt-init" value="'+esc(rt.initial)+'" placeholder="Kürzel" maxlength="3" style="width:70px">' +
       '<button class="ghost danger" data-act="delRealTeam" data-id="'+rt.id+'">✕</button>' +
@@ -936,10 +945,11 @@ function openCoachStatsModal() {
       var rtTalents = stageTalents.filter(function(t){ return t.realTeamId === rt.id; });
       var advCount = rtTalents.filter(function(t){ return t.status === 'advanced'; }).length;
       var elimCount = rtTalents.filter(function(t){ return t.status === 'eliminated'; }).length;
+      var colorDot = '<span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:' + (rt.color || '#e62a2a') + '; margin-right:6px; vertical-align:middle;"></span>';
 
       statsHtml += '<div style="background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
                      '<div>' +
-                       '<b>' + esc(rt.name) + '</b> <span style="color:var(--muted); font-size:0.85rem;">(' + esc(rt.initial) + ')</span>' +
+                       colorDot + '<b>' + esc(rt.name) + '</b> <span style="color:var(--muted); font-size:0.85rem;">(' + esc(rt.initial) + ')</span>' +
                      '</div>' +
                      '<div style="display:flex; gap:12px; font-weight:700; font-size:0.9rem;">' +
                        '<span style="color:var(--ink);">Gesamt: ' + rtTalents.length + '</span>' +
@@ -1062,7 +1072,7 @@ var A = {
     var cs = currentSeason();
     if (cs) {
       if (!cs.realTeams) cs.realTeams = [];
-      cs.realTeams.push({id: "rt_" + Date.now(), name: "", initial: ""});
+      cs.realTeams.push({id: "rt_" + Date.now(), name: "", initial: "", color: "#e62a2a"});
       openSettingsModal();
     }
     return "keep";
