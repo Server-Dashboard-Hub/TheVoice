@@ -211,10 +211,8 @@ h3{font-family:var(--display);margin:0 0 12px}
 
 .row-content{ display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; width:100%; }
 .meta{ display:flex; align-items: center; justify-content: center; gap: 6px; text-align: center; width: 100%; }
-/* Größere Schrift für Talent-Namen, Kachelgröße bleibt kompakt */
 .meta b{font-size:1.1rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.2;}
 
-/* Perfekt zentrierte, gut sichtbare Buzzer-Anzeige mit schwarzer Schrift */
 .badge-box {
   background: linear-gradient(135deg, #ffcd3c, #f5a623);
   color: #000;
@@ -666,7 +664,6 @@ function seasonView(cs) {
 
   var currentStageIdx = cs.stages.findIndex(function(st){ return st.id === ui.tab; });
 
-  // Automatisches Filtern ERST AB RUNDE 3 (Index >= 2), da Index 0 (Auditions) & Index 1 (meist Battles/Recall) alle übernehmen
   function getFilteredStageTalents() {
     var stageTalents = cs.talents.filter(function(t) { return t.stageId === ui.tab; });
     if (currentStageIdx >= 2) {
@@ -997,38 +994,62 @@ function openTalentModal(teamId, editId) {
     ui.editTalent = null;
   }
 
-  var teamOpts = '';
-  var activeTeams = cs.teams.slice(0, cs.teamCount);
-  for(var i=0; i<activeTeams.length; i++){
-    var tm = activeTeams[i];
-    var sel = tm.id === teamId ? 'selected' : '';
-    teamOpts += '<option value="'+tm.id+'" '+sel+'>'+esc(tm.name)+'</option>';
-  }
+  var currentRealId = t ? (t.realTeamId || "") : "";
+  var currentBuzzers = t ? (t.buzzers || 1) : 1;
+  var currentTeamId = teamId || (cs.teams.length > 0 ? cs.teams[0].id : "");
 
-  var realTeamOpts = '<option value="">-- Kein reales Team --</option>';
+  // Buttons für Fake-Teams erzeugen
+  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;" id="fake_team_btn_group">';
+  var activeTeams = cs.teams.slice(0, cs.teamCount);
+  for(var i = 0; i < activeTeams.length; i++) {
+    var tm = activeTeams[i];
+    var isSelectedF = currentTeamId === tm.id;
+    fakeTeamButtonsHtml += '<button type="button" class="fk-pick-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:90px; font-weight:700;">' + esc(tm.name) + '</button>';
+  }
+  fakeTeamButtonsHtml += '</div>';
+
+  // Buttons für reale Teams erzeugen (ohne "Kein Team" in der oberen Reihe)
+  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;" id="real_team_btn_group">';
   if (cs.realTeams) {
-    for(var i=0; i<cs.realTeams.length; i++){
+    for(var i = 0; i < cs.realTeams.length; i++) {
       var rt = cs.realTeams[i];
-      var sel = (t && t.realTeamId === rt.id) ? 'selected' : '';
-      realTeamOpts += '<option value="'+rt.id+'" '+sel+'>'+esc(rt.name)+' ('+esc(rt.initial)+')</option>';
+      var isSelected = currentRealId === rt.id;
+      realButtonsHtml += '<button type="button" class="rt-pick-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:100px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
     }
   }
+  realButtonsHtml += '</div>';
 
-  var buzzOpts = '';
-  for(var i=1; i<=cs.teamCount; i++){
-    var sel = (t && t.buzzers === i) || (!t && i === 1) ? 'selected' : '';
-    buzzOpts += '<option value="'+i+'" '+sel+'>'+i+'</option>';
+  // "Kein Team" als eigener breiter Button darunter platziert
+  var isNoTeamSelected = currentRealId === "";
+  var noTeamButtonHtml = '<button type="button" class="rt-pick-btn ' + (isNoTeamSelected ? "primary" : "ghost") + '" data-realid="" style="width:100%; margin-bottom:14px;">Kein Team</button>';
+
+  // Buttons für Buzzer-Anzahl (1 bis teamCount) erzeugen
+  var buzzerButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;" id="buzzer_btn_group">';
+  var maxBuzzers = cs.teamCount || 4;
+  for(var b = 1; b <= maxBuzzers; b++) {
+    var isSelectedB = currentBuzzers === b;
+    buzzerButtonsHtml += '<button type="button" class="bz-pick-btn ' + (isSelectedB ? "primary" : "ghost") + '" data-buzz="' + b + '" style="flex:1; min-width:45px; font-weight:700;">' + b + '</button>';
   }
+  buzzerButtonsHtml += '</div>';
 
   var isAllStarChecked = (t && t.isAllStar) ? 'checked' : '';
 
   dlg.innerHTML = '<h3>'+(t ? 'Talent bearbeiten' : 'Neues Talent')+'</h3>' +
     '<label>Name des Talents<input id="tal_name" value="'+esc(t?t.name:"")+'" placeholder="Max Mustermann"></label>' +
-    '<label>Reales Team / Coach wählen<select id="tal_real">' + realTeamOpts + '</select></label>' +
-    '<div style="display:flex;gap:12px;margin-top:4px;">' +
-      '<label style="flex:1">Fake-Team<select id="tal_team">' + teamOpts + '</select></label>' +
-      '<label style="flex:1">Buzzer-Anzahl<select id="tal_buzz">' + buzzOpts + '</select></label>' +
-    '</div>' +
+    
+    '<label style="margin-bottom:4px;">Fake-Team wählen</label>' +
+    fakeTeamButtonsHtml +
+    '<input type="hidden" id="tal_team_val" value="' + esc(currentTeamId) + '">' +
+
+    '<label style="margin-bottom:4px;">Reales Team / Coach wählen</label>' +
+    realButtonsHtml +
+    noTeamButtonHtml +
+    '<input type="hidden" id="tal_real_val" value="' + esc(currentRealId) + '">' +
+
+    '<label style="margin-bottom:4px;">Buzzer-Anzahl</label>' +
+    buzzerButtonsHtml +
+    '<input type="hidden" id="tal_buzz_val" value="' + currentBuzzers + '">' +
+
     '<label style="display:flex; flex-direction:row; align-items:center; gap:8px; cursor:pointer; margin-top:8px;">' +
       '<input type="checkbox" id="tal_allstar" ' + isAllStarChecked + ' style="width:auto; cursor:pointer;">' +
       '<span>⭐ All-Star (Kehrt zurück in die Show)</span>' +
@@ -1076,7 +1097,7 @@ function openStealModal() {
   }
 
   dlg.innerHTML = '<h3>🔄 Steal-Deal durchführen</h3>' +
-    '<p class="hint">Wähle ein ausgeschiedenes Talent und weise er ein neues Fake-Team / einen neuen Coach zu.</p>' +
+    '<p class="hint">Wähle ein ausgeschiedenes Talent und weise es einem neuen Coach / Fake-Team zu.</p>' +
     '<label>Ausgeschiedenes Talent<select id="steal_talent_sel">' + talentOpts + '</select></label>' +
     '<label>Neuer Realer Coach / Team<select id="steal_real">' + realTeamOpts + '</select></label>' +
     '<label>Neues Fake-Team<select id="steal_team">' + teamOpts + '</select></label>' +
@@ -1389,9 +1410,9 @@ var A = {
     if (!cs) return "keep";
 
     var name = $("#tal_name").value.trim();
-    var realTeamId = $("#tal_real").value;
-    var teamId = $("#tal_team").value;
-    var buzzers = parseInt($("#tal_buzz").value) || 1;
+    var realTeamId = $("#tal_real_val").value;
+    var teamId = $("#tal_team_val").value;
+    var buzzers = parseInt($("#tal_buzz_val").value) || 1;
     var isAllStar = $("#tal_allstar") ? $("#tal_allstar").checked : false;
     
     if(!name) { showCustomAlert("Bitte einen Namen eingeben."); return "keep"; }
@@ -1443,6 +1464,44 @@ var A = {
     save(); dlg.close(); ui.enter = true;
   }
 };
+
+document.addEventListener("click", function(ev){
+  // Klicks für Fake Team Button Auswahl im Modal
+  var fkBtn = ev.target.closest(".fk-pick-btn");
+  if (fkBtn) {
+    var groupF = document.querySelectorAll(".fk-pick-btn");
+    for (var i = 0; i < groupF.length; i++) {
+      groupF[i].className = "ghost fk-pick-btn";
+    }
+    fkBtn.className = "primary fk-pick-btn";
+    var valInpF = $("#tal_team_val");
+    if (valInpF) valInpF.value = fkBtn.dataset.teamid;
+  }
+
+  // Klicks für Reale Team Button Auswahl im Modal
+  var rtBtn = ev.target.closest(".rt-pick-btn");
+  if (rtBtn) {
+    var group = document.querySelectorAll(".rt-pick-btn");
+    for (var i = 0; i < group.length; i++) {
+      group[i].className = "ghost rt-pick-btn";
+    }
+    rtBtn.className = "primary rt-pick-btn";
+    var valInp = $("#tal_real_val");
+    if (valInp) valInp.value = rtBtn.dataset.realid;
+  }
+
+  // Klicks für Buzzer Button Auswahl im Modal
+  var bzBtn = ev.target.closest(".bz-pick-btn");
+  if (bzBtn) {
+    var groupB = document.querySelectorAll(".bz-pick-btn");
+    for (var i = 0; i < groupB.length; i++) {
+      groupB[i].className = "ghost bz-pick-btn";
+    }
+    bzBtn.className = "primary bz-pick-btn";
+    var valInpB = $("#tal_buzz_val");
+    if (valInpB) valInpB.value = bzBtn.dataset.buzz;
+  }
+});
 
 document.addEventListener("change", function(ev){
   if(ev.target.dataset.chg === "teamCount") {
