@@ -49,13 +49,13 @@ body::before {
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.wrap{max-width:100%;margin:0 auto;padding:0 24px 100px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--line)}
+.wrap{max-width:100%;margin:0 auto;padding:0 16px 80px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 8px;border-bottom:1px solid var(--line)}
 .brand{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:.01em; color:var(--red); cursor:pointer;}
 .who{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.9rem}
 .net{font-size:.8rem}
 
-select,input{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-width:100%; transition: border-color 0.2s ease;}
+select,input{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 10px;max-width:100%; transition: border-color 0.2s ease;}
 select:focus,input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 input[type=number]::-webkit-inner-spin-button,
@@ -63,10 +63,10 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 input[type=number] { -moz-appearance: textfield; }
 
 button{
-  font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:6px 12px;
+  font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:6px 12px;
   transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease,filter .2s ease,background-color .2s ease,opacity .2s ease,border-color .2s ease;
 }
-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 16px rgba(230,42,42,.25)}
+button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 12px rgba(230,42,42,.25)}
 button:active:not(:disabled){transform:scale(.92);box-shadow:none}
 
 button.primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
@@ -75,82 +75,48 @@ button.danger{color:#ffb3b3}
 button:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 
 .hero{
-  font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,6vw,4rem);line-height:1.05;margin:32px 0 16px;letter-spacing:-.02em;
+  font-family:var(--display);font-weight:800;font-size:clamp(2rem,4vw,3.2rem);line-height:1.05;margin:20px 8px 12px;letter-spacing:-.02em;
   background:linear-gradient(135deg, #ff4d4d 0%, #e62a2a 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
-h2{font-family:var(--display);font-size:1.5rem;margin:0}
-h3{font-family:var(--display);margin:0 0 12px}
-.hint{color:var(--muted);margin:0 0 14px;font-size:.9rem}
+h2{font-family:var(--display);font-size:1.4rem;margin:0}
+h3{font-family:var(--display);margin:0 0 8px}
+.hint{color:var(--muted);margin:0 0 12px;font-size:.85rem}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(0, 1fr));gap:12px;margin-top:20px; align-items:start;}
+/* Etwas schmalere Spalten (minmax 240px) für größeren Abstand dazwischen, bleiben auf einer Höhe */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px, 1fr));gap:22px;margin-top:16px; align-items:start;}
 
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px; box-shadow: 0 6px 20px rgba(0,0,0,0.3);}
 .card.team-type-odd { background: linear-gradient(140deg, rgba(28, 8, 8, 0.95), rgba(16, 4, 4, 0.95)); border-color: rgba(230, 42, 42, 0.45); }
 .card.team-type-even { background: linear-gradient(140deg, rgba(36, 12, 10, 0.95), rgba(20, 6, 5, 0.95)); border-color: rgba(255, 107, 107, 0.35); }
 
-.season-card { cursor:pointer; display:flex; flex-direction:column; gap:8px; padding:24px; min-height:140px; justify-content:center; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease;}
-.season-card:hover { transform:translateY(-6px); box-shadow:0 12px 24px rgba(0,0,0,0.4); border-color:var(--red); }
+.season-card { cursor:pointer; display:flex; flex-direction:column; gap:6px; padding:20px; min-height:120px; justify-content:center; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease;}
+.season-card:hover { transform:translateY(-4px); box-shadow:0 10px 20px rgba(0,0,0,0.4); border-color:var(--red); }
 .season-card:active { transform:scale(0.96); }
-.season-card .s-title { font-family:var(--display); font-size:1.8rem; font-weight:800; color:var(--ink); line-height:1.1; }
-.season-card .s-meta { color:var(--muted); font-size:0.95rem; }
-.season-card .s-winner { margin-top:8px; display:inline-block; padding:4px 8px; background:rgba(255,209,102,0.1); color:var(--gold); border:1px solid rgba(255,209,102,0.3); border-radius:6px; font-weight:700; font-size:0.85rem;}
-
-.hall-of-fame {
-  background: linear-gradient(145deg, rgba(30, 20, 5, 0.9), rgba(15, 10, 2, 0.9));
-  border: 1px solid rgba(255, 209, 102, 0.4);
-  border-radius: 16px;
-  padding: 20px;
-  margin-top: 32px;
-}
-.hof-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
-.hof-item {
-  background: rgba(255, 209, 102, 0.05);
-  border: 1px solid rgba(255, 209, 102, 0.2);
-  border-radius: 10px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.hof-badge {
-  font-size: 1.8rem;
-}
-.hof-name {
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: var(--gold);
-}
-.hof-season {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
+.season-card .s-title { font-family:var(--display); font-size:1.6rem; font-weight:800; color:var(--ink); line-height:1.1; }
+.season-card .s-meta { color:var(--muted); font-size:0.9rem; }
+.season-card .s-winner { margin-top:6px; display:inline-block; padding:3px 8px; background:rgba(255,209,102,0.1); color:var(--gold); border:1px solid rgba(255,209,102,0.3); border-radius:6px; font-weight:700; font-size:0.8rem;}
 
 .team-header { 
   position: relative;
-  padding-bottom: 8px; 
+  padding-bottom: 6px; 
   border-bottom: 1px solid var(--line); 
   margin-bottom: 8px; 
   display: flex; 
   align-items: center;
   justify-content: center;
-  min-height: 32px;
+  min-height: 28px;
 }
-.team-header h3 { margin: 0; font-size: 1.2rem; color: var(--gold); text-align: center; }
+.team-header h3 { margin: 0; font-size: 1.1rem; color: var(--gold); text-align: center; }
 .team-header .add-btn-left {
   position: absolute;
   left: 0;
   opacity: 0;
   transition: opacity 0.2s ease;
-  padding: 2px 6px;
-  font-size: 0.8rem;
+  padding: 2px 5px;
+  font-size: 0.75rem;
 }
 .card:hover .team-header .add-btn-left {
   opacity: 1;
@@ -160,8 +126,8 @@ h3{font-family:var(--display);margin:0 0 12px}
   right: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
+  gap: 5px;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -170,48 +136,51 @@ h3{font-family:var(--display);margin:0 0 12px}
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin: 0 0 16px;
+  gap: 10px;
+  margin: 0 8px 12px;
   border-bottom: 1px solid var(--line);
-  padding-bottom: 10px;
+  padding-bottom: 8px;
 }
 .tabs{display:flex;gap:6px;flex-wrap:wrap;}
-.tabs button{border-radius:999px;background:transparent}
+.tabs button{border-radius:999px;background:transparent;padding:5px 12px;font-size:0.85rem;}
 .tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
 
 .search-bar-wrap {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
+  margin: 0 8px 14px;
+  display: inline-flex;
+  gap: 6px;
   align-items: center;
+  width: 100%;
+  max-width: 300px;
 }
 .search-bar-wrap input {
-  flex: 1;
+  width: 100%;
   background: var(--panel);
   border-color: var(--line);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  padding: 6px 10px;
 }
 
 .view-switch-container {
   display: flex;
   justify-content: center;
-  margin: 16px 0 24px;
+  margin: 12px 8px 16px;
 }
 .view-switch {
   display: inline-flex;
   background: var(--panel2);
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 4px;
+  padding: 3px;
   position: relative;
 }
 .view-switch button {
   background: transparent;
   border: none;
   border-radius: 999px;
-  padding: 8px 20px;
+  padding: 6px 16px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--muted);
   box-shadow: none !important;
   transform: none !important;
@@ -223,142 +192,146 @@ h3{font-family:var(--display);margin:0 0 12px}
 }
 
 @keyframes simpleFadeUp { 
-  from { opacity: 0; transform: translateY(8px); } 
+  from { opacity: 0; transform: translateY(6px); } 
   to { opacity: 1; transform: translateY(0); } 
 }
 
+/* Größere Schrift, aber flache Höhe durch minimales Padding */
 .row{
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 12px;
+  gap: 8px;
   background: var(--panel2);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 6px 10px;
+  border-radius: 9px;
+  padding: 4px 10px;
   align-items: center;
   animation: simpleFadeUp 0.3s ease-out backwards;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
   user-select: none;
 }
 
-.team-type-odd .row { background: rgba(45, 12, 12, 0.7); border-color: rgba(90, 25, 25, 0.8); }
-.team-type-even .row { background: rgba(58, 18, 15, 0.7); border-color: rgba(110, 38, 32, 0.8); }
+.team-type-odd .row { background: rgba(45, 12, 12, 0.75); border-color: rgba(90, 25, 25, 0.8); }
+.team-type-even .row { background: rgba(58, 18, 15, 0.75); border-color: rgba(110, 38, 32, 0.8); }
 
 .row.selectable { cursor: pointer; }
 .row.selectable:hover { border-color: var(--gold); }
 .row.selectable:active { transform: scale(0.97); }
-.row.selected { border-color: var(--gold); background: rgba(255, 209, 102, 0.15) !important; }
+.row.selected { border-color: var(--gold); background: rgba(255, 209, 102, 0.18) !important; }
 
-.row.stealable { cursor: pointer; border-color: rgba(255, 209, 102, 0.5); }
-.row.stealable:hover { border-color: var(--gold); background: rgba(255, 209, 102, 0.08) !important; }
+.row.stealable { cursor: pointer; border-color: rgba(255, 209, 102, 0.6); }
+.row.stealable:hover { border-color: var(--gold); background: rgba(255, 209, 102, 0.1) !important; }
 .row.stealable:active { transform: scale(0.97); }
 
-.row.eliminated { opacity: 0.5; filter: grayscale(80%); background: rgba(0,0,0,0.3) !important; }
+.row.eliminated { opacity: 0.5; filter: grayscale(80%); background: rgba(0,0,0,0.35) !important; }
 .row.eliminated .meta b { text-decoration: line-through; color: var(--muted); }
 
 .row.advanced { 
-  background: rgba(46, 204, 113, 0.18) !important; 
+  background: rgba(46, 204, 113, 0.2) !important; 
   border-color: var(--green) !important; 
 }
 
 @keyframes highlightPulse {
   0% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
-  25% { transform: scale(1.03); box-shadow: 0 0 18px var(--gold); border-color: var(--gold); }
-  75% { transform: scale(1.03); box-shadow: 0 0 18px var(--gold); border-color: var(--gold); }
+  25% { transform: scale(1.02); box-shadow: 0 0 14px var(--gold); border-color: var(--gold); }
+  75% { transform: scale(1.02); box-shadow: 0 0 14px var(--gold); border-color: var(--gold); }
   100% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
 }
 .row.recently-updated {
   animation: highlightPulse 3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.row-content{ display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; width:100%; }
+.row-content{ display:flex; flex-direction:column; gap:1px; align-items:center; justify-content:center; width:100%; }
 .meta{ display:flex; align-items: center; justify-content: center; gap: 6px; text-align: center; width: 100%; }
-.meta b{font-size:1.1rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.2;}
+.meta b{font-size:1.08rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.15;}
 
 .badge-box {
   background: linear-gradient(135deg, #ffcd3c, #f5a623);
   color: #000;
-  padding: 2px 6px;
+  padding: 1px 5px;
   border-radius: 6px;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: 'Jost', sans-serif;
-  min-width: 26px;
-  height: 26px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  min-width: 22px;
+  height: 22px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   border: 1px solid rgba(0,0,0,0.15);
   line-height: 1;
   pointer-events: none;
 }
 
 .ace-symbol {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: var(--gold);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 26px;
-  height: 26px;
+  min-width: 22px;
+  height: 22px;
   line-height: 1;
-  text-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+  text-shadow: 0 0 10px rgba(255, 209, 102, 0.6);
   pointer-events: none;
 }
 
 .floating-popup {
   position: fixed;
-  bottom: 20px;
+  bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
+  background: rgba(20, 8, 8, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  padding: 10px 16px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   z-index: 1000;
   animation: slideUpPopup 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes slideUpPopup {
-  from { opacity: 0; transform: translate(-50%, 20px); }
+  from { opacity: 0; transform: translate(-50%, 16px); }
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 
 dialog{
   background:var(--panel);
   color:var(--ink);
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:24px;
-  width:min(520px,92vw);
+  border-radius:18px;
+  padding:20px;
+  width:min(500px,92vw);
   animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
 }
-dialog::backdrop{background:rgba(5,2,5,.85);backdrop-filter:blur(4px);animation:fadeIn .25s ease}
+dialog::backdrop{background:rgba(5,2,5,.85);backdrop-filter:blur(6px);animation:fadeIn .25s ease}
 @keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  from { opacity: 0; transform: scale(0.92) translateY(14px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-dialog label{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;color:var(--muted);font-size:.9rem}
+dialog label{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;color:var(--muted);font-size:0.85rem}
 dialog input,dialog select{width:100%}
 
-.empty{color:var(--muted);padding:15px 0; text-align: center; font-size: 0.9rem;}
-.sm{padding:2px 6px;font-size:0.7rem}
-.stage-item { display:flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.empty{color:var(--muted);padding:12px 0; text-align: center; font-size: 0.85rem;}
+.sm{padding:2px 6px;font-size:0.7rem; border-radius: 6px;}
+.stage-item { display:flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .stage-item input { flex: 1; }
 
-.header-actions { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+.header-actions { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; padding: 0 8px; }
 
 @keyframes resultCardPop {
-  0% { opacity: 0; transform: scale(0.8) translateY(15px); }
+  0% { opacity: 0; transform: scale(0.8) translateY(12px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 .anim-result-card {
@@ -601,8 +574,8 @@ dlg.addEventListener("close", function() { render(); });
 
 function showCustomAlert(msg) {
   dlg.innerHTML = '<h3>Hinweis</h3>' +
-    '<p style="margin: 16px 0; color: var(--ink);">' + esc(msg) + '</p>' +
-    '<div class="actions" style="margin-top:20px; justify-content:flex-end;">' +
+    '<p style="margin: 14px 0; color: var(--ink);">' + esc(msg) + '</p>' +
+    '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
       '<button class="primary" data-act="closeDlg">OK</button>' +
     '</div>';
   if (!dlg.open) dlg.showModal();
@@ -610,8 +583,8 @@ function showCustomAlert(msg) {
 
 function showCustomConfirm(msg, onConfirm) {
   dlg.innerHTML = '<h3>Bestätigung</h3>' +
-    '<p style="margin: 16px 0; color: var(--ink);">' + esc(msg) + '</p>' +
-    '<div class="actions" style="margin-top:20px; justify-content:flex-end;">' +
+    '<p style="margin: 14px 0; color: var(--ink);">' + esc(msg) + '</p>' +
+    '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" id="dlg_confirm_btn">Bestätigen</button>' +
     '</div>';
@@ -664,13 +637,13 @@ function render() {
 
     if (currentStageIdx > 0 && ui.selectedTalents.length > 0 && !ui.stealModeActive) {
       floatingContainer.innerHTML = '<div class="floating-popup">' +
-                '<span style="background:var(--panel); border:1px solid var(--line); padding:8px 14px; border-radius:8px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
+                '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.85rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
                 '<button class="ghost sm" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
                 '<button class="primary sm" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
               '</div>';
     } else if (ui.stealModeActive) {
-      floatingContainer.innerHTML = '<div class="floating-popup" style="background:var(--panel); border:1px solid var(--gold); padding:10px 16px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.5);">' +
-                '<span style="color:var(--gold); font-weight:700; font-size:0.95rem;">🔄 Klicke auf ein ausgeschiedenes Talent, um den Steal-Deal zu starten!</span>' +
+      floatingContainer.innerHTML = '<div class="floating-popup" style="background:var(--panel); border:1px solid var(--gold); padding:8px 14px; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,0.5);">' +
+                '<span style="color:var(--gold); font-weight:700; font-size:0.9rem;">🔄 Klicke auf ein ausgeschiedenes Talent, um den Steal-Deal zu starten!</span>' +
                 '<button class="ghost sm" style="background:var(--panel2); border-color:var(--line);" data-act="toggleStealMode">Abbrechen</button>' +
               '</div>';
     } else {
@@ -680,21 +653,18 @@ function render() {
 }
 
 function homeView() {
-  var html = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">' +
-             '<h1 class="hero" style="margin:24px 0">Alle Staffeln</h1>' +
-             '<button class="primary" data-act="openSeasonModal" style="font-size:1.1rem; padding:10px 20px">＋ Neue Staffel</button>' +
+  var html = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:0 8px;">' +
+             '<h1 class="hero" style="margin:20px 0">Alle Staffeln</h1>' +
+             '<button class="primary" data-act="openSeasonModal" style="font-size:1rem; padding:8px 18px">＋ Neue Staffel</button>' +
              '</div>';
   
   if (S.seasons.length === 0) {
-    html += '<p class="empty" style="font-size:1.1rem; margin-top:40px;">Noch keine Staffeln angelegt. Klicke auf "Neue Staffel", um zu beginnen.</p>';
+    html += '<p class="empty" style="font-size:1rem; margin-top:30px; padding:0 8px;">Noch keine Staffeln angelegt. Klicke auf "Neue Staffel", um zu beginnen.</p>';
     return html;
   }
 
   var sortedSeasons = S.seasons.slice().sort(function(a,b){ return b.year - a.year; });
-  
   var cardsHtml = '';
-  var hofHtml = '';
-  var hasWinners = false;
 
   for (var i = 0; i < sortedSeasons.length; i++) {
     var s = sortedSeasons[i];
@@ -708,29 +678,9 @@ function homeView() {
         '<div class="s-meta">' + meta + '</div>' +
         '<div><span class="s-winner">' + winnerLabel + '</span></div>' +
       '</div>';
-
-    if (s.winner && s.winner !== "TBD") {
-      hasWinners = true;
-      hofHtml += '<div class="hof-item">' +
-                   '<div class="hof-badge">🏆</div>' +
-                   '<div>' +
-                     '<div class="hof-name">' + esc(s.winner) + '</div>' +
-                     '<div class="hof-season">The Voice ' + esc(s.location) + ' (St. ' + esc(s.number) + ')</div>' +
-                   '</div>' +
-                 '</div>';
-    }
   }
 
-  html += '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">' + cardsHtml + '</div>';
-
-  if (hasWinners) {
-    html += '<div class="hall-of-fame">' +
-              '<h3 style="color:var(--gold); margin-bottom:4px; display:flex; align-items:center; gap:8px;">🌟 Hall of Fame (Gewinner-Galerie)</h3>' +
-              '<p class="hint" style="margin-bottom:12px;">Alle Sieger aller Staffeln auf einen Blick.</p>' +
-              '<div class="hof-grid">' + hofHtml + '</div>' +
-            '</div>';
-  }
-
+  html += '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); padding:0 8px;">' + cardsHtml + '</div>';
   return html;
 }
 
@@ -740,12 +690,11 @@ function seasonView(cs) {
   var html = '<div class="header-actions">' +
                '<button class="ghost" data-act="goHome">← Alle Staffeln</button>' +
                '<button class="ghost" data-act="openSeasonModal" data-id="'+cs.id+'">✏️ Staffel bearbeiten</button>' +
-               '<button class="ghost danger" data-act="delSeason" data-id="'+cs.id+'">🗑️ Löschen</button>' +
              '</div>' +
-             '<h1 class="hero" style="margin:10px 0 16px; font-size:clamp(2rem,5vw,3rem);">' + title + '</h1>';
+             '<h1 class="hero" style="margin:8px 8px 12px; font-size:clamp(1.8rem,4vw,2.6rem);">' + title + '</h1>';
              
   if (cs.winner && cs.winner !== "TBD") {
-    html += '<p style="color:var(--gold); font-weight:700; font-size:1.1rem; margin-top:0;">🏆 Gewinner: ' + esc(cs.winner) + '</p>';
+    html += '<p style="color:var(--gold); font-weight:700; font-size:1rem; margin:0 8px 12px;">🏆 Gewinner: ' + esc(cs.winner) + '</p>';
   }
 
   if (cs.stages.length > 0) {
@@ -757,10 +706,9 @@ function seasonView(cs) {
     }
     html += '<div class="stage-bar-wrap">' +
               '<div class="tabs" style="margin-top:0;">' + tabsHtml + '</div>' +
-              '<button class="ghost sm" data-act="openCoachStatsModal" style="border-color:var(--line); padding:6px 12px; font-size:0.85rem;">📊 Statistik pro reales Team</button>' +
             '</div>';
   } else {
-    html += '<p class="empty">Keine Abschnitte vorhanden. Gehe in die Einstellungen.</p>';
+    html += '<p class="empty" style="padding:0 8px;">Keine Abschnitte vorhanden. Gehe in die Einstellungen.</p>';
     return html;
   }
 
@@ -835,8 +783,8 @@ function seasonView(cs) {
           buzzerBadge = '<span class="badge-box" title="Buzzer">' + esc(t.buzzers) + '</span>';
         }
 
-        var allStarStar = t.isAllStar ? '<span style="color:var(--gold); font-size:1.1rem; margin-right:2px;" title="All-Star (Kehrt zurück)">⭐</span>' : '';
-        var stealBadge = t.isSteal ? '<span style="color:var(--gold); font-size:0.8rem; margin-left:6px; padding:2px 6px; background:rgba(255,209,102,0.15); border-radius:4px;" title="Steal-Deal Talent">🔄 Steal</span>' : '';
+        var allStarStar = t.isAllStar ? '<span style="color:var(--gold); font-size:1rem; margin-right:2px;" title="All-Star (Kehrt zurück)">⭐</span>' : '';
+        var stealBadge = t.isSteal ? '<span style="color:var(--gold); font-size:0.75rem; margin-left:4px; padding:1px 5px; background:rgba(255,209,102,0.15); border-radius:5px;" title="Steal-Deal Talent">🔄 Steal</span>' : '';
 
         var statusClass = '';
         if (t.status === 'eliminated') statusClass = 'eliminated';
@@ -868,7 +816,7 @@ function seasonView(cs) {
 
         var editButtonsHtml = '';
         if (ui.editMode) {
-          editButtonsHtml = '<div style="display:flex;gap:4px;margin-top:2px;justify-content:center;">' +
+          editButtonsHtml = '<div style="display:flex;gap:4px;margin-top:1px;justify-content:center;">' +
                               '<button class="ghost sm" data-act="editTalent" data-id="'+t.id+'">✏️ Edit</button>' +
                               '<button class="ghost sm danger" data-act="delTalent" data-id="'+t.id+'">Löschen</button>' +
                             '</div>';
@@ -888,7 +836,7 @@ function seasonView(cs) {
       }
 
       if (teamTalents.length === 0) {
-        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente gefunden</div>';
+        talentsHtml = '<div class="empty" style="padding:8px 0">Keine Talente gefunden</div>';
       }
 
       var addBtnHtml = '';
@@ -914,7 +862,7 @@ function seasonView(cs) {
             '<h3>' + esc(team.name) + '</h3>' +
             '<div class="talent-count-right">' + statsBadgeHtml + '</div>' +
           '</div>' +
-          '<div class="list" style="margin-bottom:4px;">' + talentsHtml + '</div>' +
+          '<div class="list" style="margin-bottom:2px;">' + talentsHtml + '</div>' +
         '</div>';
     }
   } else {
@@ -939,8 +887,8 @@ function seasonView(cs) {
           buzzerBadge = '<span class="badge-box" title="Buzzer">' + esc(t.buzzers) + '</span>';
         }
 
-        var allStarStar = t.isAllStar ? '<span style="color:var(--gold); font-size:1.1rem; margin-right:2px;" title="All-Star (Kehrt zurück)">⭐</span>' : '';
-        var stealBadge = t.isSteal ? '<span style="color:var(--gold); font-size:0.8rem; margin-left:6px; padding:2px 6px; background:rgba(255,209,102,0.15); border-radius:4px;" title="Steal-Deal Talent">🔄 Steal</span>' : '';
+        var allStarStar = t.isAllStar ? '<span style="color:var(--gold); font-size:1rem; margin-right:2px;" title="All-Star (Kehrt zurück)">⭐</span>' : '';
+        var stealBadge = t.isSteal ? '<span style="color:var(--gold); font-size:0.75rem; margin-left:4px; padding:1px 5px; background:rgba(255,209,102,0.15); border-radius:5px;" title="Steal-Deal Talent">🔄 Steal</span>' : '';
 
         var statusClass = '';
         if (t.status === 'eliminated') statusClass = 'eliminated';
@@ -972,7 +920,7 @@ function seasonView(cs) {
 
         var editButtonsHtml = '';
         if (ui.editMode) {
-          editButtonsHtml = '<div style="display:flex;gap:4px;margin-top:2px;justify-content:center;">' +
+          editButtonsHtml = '<div style="display:flex;gap:4px;margin-top:1px;justify-content:center;">' +
                               '<button class="ghost sm" data-act="editTalent" data-id="'+t.id+'">✏️ Edit</button>' +
                               '<button class="ghost sm danger" data-act="delTalent" data-id="'+t.id+'">Löschen</button>' +
                             '</div>';
@@ -992,7 +940,7 @@ function seasonView(cs) {
       }
 
       if (rtTalents.length === 0) {
-        talentsHtml = '<div class="empty" style="padding:10px 0">Keine Talente gefunden</div>';
+        talentsHtml = '<div class="empty" style="padding:8px 0">Keine Talente gefunden</div>';
       }
 
       var statsBadgeHtml = '<span style="color:var(--muted)">' + rtTalents.length + '</span>' +
@@ -1007,16 +955,16 @@ function seasonView(cs) {
             '<h3 style="color:' + (rt.color || 'var(--gold)') + '">' + esc(rt.name) + ' (' + esc(rt.initial) + ')</h3>' +
             '<div class="talent-count-right">' + statsBadgeHtml + '</div>' +
           '</div>' +
-          '<div class="list" style="margin-bottom:4px;">' + talentsHtml + '</div>' +
+          '<div class="list" style="margin-bottom:2px;">' + talentsHtml + '</div>' +
         '</div>';
     }
 
     if (realTeamsList.length === 0) {
-      gridHtml = '<p class="empty">Keine realen Teams in den Einstellungen definiert.</p>';
+      gridHtml = '<p class="empty" style="padding:0 8px;">Keine realen Teams in den Einstellungen definiert.</p>';
     }
   }
 
-  html += '<div class="grid">' + gridHtml + '</div>';
+  html += '<div class="grid" style="padding:0 8px;">' + gridHtml + '</div>';
   return html;
 }
 
@@ -1032,14 +980,19 @@ function openSeasonModal(editId) {
   }
 
   var dYear = new Date().getFullYear();
+  var deleteSeasonBtn = s ? '<button type="button" class="ghost danger" data-act="delSeasonModal" data-id="'+s.id+'">🗑️ Staffel löschen</button>' : '';
+
   dlg.innerHTML = '<h3>' + (s ? 'Staffel bearbeiten' : 'Neue Staffel anlegen') + '</h3>' +
     '<label>Ort / Land (z.B. Germany, US)<input id="sea_loc" value="'+esc(s?s.location:"Germany")+'"></label>' +
     '<label>Staffel Nummer<input type="number" id="sea_num" value="'+esc(s?s.number:"1")+'"></label>' +
     '<label>Jahr<input type="number" id="sea_year" value="'+esc(s?s.year:dYear)+'"></label>' +
     '<label>Gewinner (Optional)<input id="sea_winner" value="'+esc((s && s.winner !== "TBD") ? s.winner : "")+'" placeholder="TBD"></label>' +
-    '<div class="actions" style="margin-top:20px;">' +
-      '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
-      '<button class="primary" data-act="saveSeason">Speichern</button>' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:8px;">' +
+      deleteSeasonBtn +
+      '<div style="display:flex; gap:8px; margin-left:auto;">' +
+        '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
+        '<button class="primary" data-act="saveSeason">Speichern</button>' +
+      '</div>' +
     '</div>';
   
   if (!dlg.open) dlg.showModal();
@@ -1100,9 +1053,9 @@ function openSettingsModal() {
     var rt = cs.realTeams[i];
     var rtColor = rt.color || "#e62a2a";
     realTeamsHtml += '<div class="stage-item" data-rtid="'+rt.id+'">' +
-      '<input type="color" class="rt-color" value="'+rtColor+'" title="Farbe wählen" style="width:42px; height:38px; padding:2px; cursor:pointer;">' +
+      '<input type="color" class="rt-color" value="'+rtColor+'" title="Farbe wählen" style="width:38px; height:34px; padding:2px; cursor:pointer; border-radius:8px;">' +
       '<input type="text" class="rt-name" value="'+esc(rt.name)+'" placeholder="Reales Team (z.B. Team Shirin)">' +
-      '<input type="text" class="rt-init" value="'+esc(rt.initial)+'" placeholder="Kürzel" maxlength="3" style="width:70px">' +
+      '<input type="text" class="rt-init" value="'+esc(rt.initial)+'" placeholder="Kürzel" maxlength="3" style="width:65px">' +
       '<button class="ghost danger" data-act="delRealTeam" data-id="'+rt.id+'">✕</button>' +
     '</div>';
   }
@@ -1118,31 +1071,31 @@ function openSettingsModal() {
 
   dlg.innerHTML = '<h2>⚙️ Einstellungen</h2>' +
     '<p class="hint">Konfiguriere Fake-Teams, reale Team-Vorlagen, Abschnitte und Backups.</p>' +
-    '<hr style="border:0;border-bottom:1px solid var(--line);margin:16px 0">' +
+    '<hr style="border:0;border-bottom:1px solid var(--line);margin:12px 0">' +
     '<h3>Fake-Teams</h3>' +
     '<label>Anzahl der Teams<select id="set_tc" data-chg="teamCount">' + tcOpts + '</select></label>' +
     '<div id="team_names_container">' + teamsHtml + '</div>' +
     
-    '<hr style="border:0;border-bottom:1px solid var(--line);margin:24px 0 16px">' +
+    '<hr style="border:0;border-bottom:1px solid var(--line);margin:16px 0 12px">' +
     '<h3>Reale Teams / Coaches (Vorlagen)</h3>' +
     '<div id="real_teams_container">' + realTeamsHtml + '</div>' +
     '<button class="ghost" data-act="addRealTeam">＋ Reales Team hinzufügen</button>' +
 
-    '<hr style="border:0;border-bottom:1px solid var(--line);margin:24px 0 16px">' +
+    '<hr style="border:0;border-bottom:1px solid var(--line);margin:16px 0 12px">' +
     '<h3>Abschnitte (Stages)</h3>' +
     '<div id="stages_container">' + stagesHtml + '</div>' +
     '<button class="ghost" data-act="addStage">＋ Abschnitt hinzufügen</button>' +
 
-    '<hr style="border:0;border-bottom:1px solid var(--line);margin:24px 0 16px">' +
+    '<hr style="border:0;border-bottom:1px solid var(--line);margin:16px 0 12px">' +
     '<h3>Daten Export & Import (Backup)</h3>' +
-    '<div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">' +
+    '<div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">' +
       '<button class="ghost" data-act="exportJSON" style="border-color:var(--line);">💾 JSON Backup exportieren</button>' +
-      '<label class="ghost" style="display:inline-flex; align-items:center; justify-content:center; margin:0; border:1px solid var(--line); border-radius:8px; padding:6px 12px; cursor:pointer; background:var(--panel2); color:var(--ink); font-size:0.9rem;">' +
+      '<label class="ghost" style="display:inline-flex; align-items:center; justify-content:center; margin:0; border:1px solid var(--line); border-radius:10px; padding:6px 12px; cursor:pointer; background:var(--panel2); color:var(--ink); font-size:0.85rem;">' +
         '📂 JSON Backup importieren <input type="file" id="import_file_input" accept=".json" style="display:none;" data-chg="importJSON">' +
       '</label>' +
     '</div>' +
 
-    '<div class="actions" style="margin-top:24px;justify-content:flex-end;">' +
+    '<div class="actions" style="margin-top:20px;justify-content:flex-end;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" data-act="saveSettings">Speichern</button>' +
     '</div>';
@@ -1167,33 +1120,33 @@ function openTalentModal(teamId, editId) {
   var currentBuzzers = t ? (t.buzzers || 1) : 1;
   var currentTeamId = teamId || (cs.teams.length > 0 ? cs.teams[0].id : "");
 
-  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;" id="fake_team_btn_group">';
+  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;" id="fake_team_btn_group">';
   var activeTeams = cs.teams.slice(0, cs.teamCount);
   for(var i = 0; i < activeTeams.length; i++) {
     var tm = activeTeams[i];
     var isSelectedF = currentTeamId === tm.id;
-    fakeTeamButtonsHtml += '<button type="button" class="fk-pick-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:90px; font-weight:700;">' + esc(tm.name) + '</button>';
+    fakeTeamButtonsHtml += '<button type="button" class="fk-pick-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:80px; font-weight:700;">' + esc(tm.name) + '</button>';
   }
   fakeTeamButtonsHtml += '</div>';
 
-  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;" id="real_team_btn_group">';
+  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:6px;" id="real_team_btn_group">';
   if (cs.realTeams) {
     for(var i = 0; i < cs.realTeams.length; i++) {
       var rt = cs.realTeams[i];
       var isSelected = currentRealId === rt.id;
-      realButtonsHtml += '<button type="button" class="rt-pick-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:100px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
+      realButtonsHtml += '<button type="button" class="rt-pick-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:90px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
     }
   }
   realButtonsHtml += '</div>';
 
   var isNoTeamSelected = currentRealId === "";
-  var noTeamButtonHtml = '<button type="button" class="rt-pick-btn ' + (isNoTeamSelected ? "primary" : "ghost") + '" data-realid="" style="width:100%; margin-bottom:14px;">Kein Team</button>';
+  var noTeamButtonHtml = '<button type="button" class="rt-pick-btn ' + (isNoTeamSelected ? "primary" : "ghost") + '" data-realid="" style="width:100%; margin-bottom:12px;">Kein Team</button>';
 
-  var buzzerButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;" id="buzzer_btn_group">';
+  var buzzerButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;" id="buzzer_btn_group">';
   var maxBuzzers = cs.teamCount || 4;
   for(var b = 1; b <= maxBuzzers; b++) {
     var isSelectedB = currentBuzzers === b;
-    buzzerButtonsHtml += '<button type="button" class="bz-pick-btn ' + (isSelectedB ? "primary" : "ghost") + '" data-buzz="' + b + '" style="flex:1; min-width:45px; font-weight:700;">' + b + '</button>';
+    buzzerButtonsHtml += '<button type="button" class="bz-pick-btn ' + (isSelectedB ? "primary" : "ghost") + '" data-buzz="' + b + '" style="flex:1; min-width:40px; font-weight:700;">' + b + '</button>';
   }
   buzzerButtonsHtml += '</div>';
 
@@ -1202,24 +1155,24 @@ function openTalentModal(teamId, editId) {
   dlg.innerHTML = '<h3>'+(t ? 'Talent bearbeiten' : 'Neues Talent')+'</h3>' +
     '<label>Name des Talents<input id="tal_name" value="'+esc(t?t.name:"")+'" placeholder="Max Mustermann"></label>' +
     
-    '<label style="margin-bottom:4px;">Fake-Team wählen</label>' +
+    '<label style="margin-bottom:3px;">Fake-Team wählen</label>' +
     fakeTeamButtonsHtml +
     '<input type="hidden" id="tal_team_val" value="' + esc(currentTeamId) + '">' +
 
-    '<label style="margin-bottom:4px;">Reales Team / Coach wählen</label>' +
+    '<label style="margin-bottom:3px;">Reales Team / Coach wählen</label>' +
     realButtonsHtml +
     noTeamButtonHtml +
     '<input type="hidden" id="tal_real_val" value="' + esc(currentRealId) + '">' +
 
-    '<label style="margin-bottom:4px;">Buzzer-Anzahl</label>' +
+    '<label style="margin-bottom:3px;">Buzzer-Anzahl</label>' +
     buzzerButtonsHtml +
     '<input type="hidden" id="tal_buzz_val" value="' + currentBuzzers + '">' +
 
-    '<label style="display:flex; flex-direction:row; align-items:center; gap:8px; cursor:pointer; margin-top:8px;">' +
+    '<label style="display:flex; flex-direction:row; align-items:center; gap:6px; cursor:pointer; margin-top:6px;">' +
       '<input type="checkbox" id="tal_allstar" ' + isAllStarChecked + ' style="width:auto; cursor:pointer;">' +
       '<span>⭐ All-Star (Kehrt zurück in die Show)</span>' +
     '</label>' +
-    '<div class="actions" style="margin-top:16px;">' +
+    '<div class="actions" style="margin-top:14px;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" data-act="saveTalent">Speichern</button>' +
     '</div>';
@@ -1237,39 +1190,39 @@ function openStealPopupForTalent(talentId) {
   var currentRealId = t.realTeamId || "";
   var currentTeamId = t.teamId || "";
 
-  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;" id="steal_real_btn_group">';
+  var realButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;" id="steal_real_btn_group">';
   if (cs.realTeams) {
     for(var i = 0; i < cs.realTeams.length; i++) {
       var rt = cs.realTeams[i];
       var isSelected = currentRealId === rt.id;
-      realButtonsHtml += '<button type="button" class="steal-rt-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:100px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
+      realButtonsHtml += '<button type="button" class="steal-rt-btn ' + (isSelected ? "primary" : "ghost") + '" data-realid="' + rt.id + '" style="flex:1; min-width:90px; border-color:' + (rt.color || 'var(--line)') + '">' + esc(rt.name) + '</button>';
     }
   }
   realButtonsHtml += '</div>';
 
-  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;" id="steal_fake_btn_group">';
+  var fakeTeamButtonsHtml = '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:14px;" id="steal_fake_btn_group">';
   var activeTeams = cs.teams.slice(0, cs.teamCount);
   for(var i = 0; i < activeTeams.length; i++) {
     var tm = activeTeams[i];
     var isSelectedF = currentTeamId === tm.id;
-    fakeTeamButtonsHtml += '<button type="button" class="steal-fk-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:90px; font-weight:700;">' + esc(tm.name) + '</button>';
+    fakeTeamButtonsHtml += '<button type="button" class="steal-fk-btn ' + (isSelectedF ? "primary" : "ghost") + '" data-teamid="' + tm.id + '" style="flex:1; min-width:80px; font-weight:700;">' + esc(tm.name) + '</button>';
   }
   fakeTeamButtonsHtml += '</div>';
 
   dlg.innerHTML = '<h3>🔄 Steal-Deal für: <span style="color:var(--gold);">' + esc(t.name) + '</span></h3>' +
     '<p class="hint">Weise das ausgeschiedene Talent direkt einem neuen Coach (Reales Team) und einem neuen Fake-Team zu.</p>' +
     
-    '<label style="margin-bottom:4px; font-weight:700; color:var(--ink);">Neues Reales Team / Coach wählen</label>' +
+    '<label style="margin-bottom:3px; font-weight:700; color:var(--ink);">Neues Reales Team / Coach wählen</label>' +
     realButtonsHtml +
     '<input type="hidden" id="steal_real_val" value="' + esc(currentRealId) + '">' +
 
-    '<label style="margin-bottom:4px; font-weight:700; color:var(--ink);">Neues Fake-Team wählen</label>' +
+    '<label style="margin-bottom:3px; font-weight:700; color:var(--ink);">Neues Fake-Team wählen</label>' +
     fakeTeamButtonsHtml +
     '<input type="hidden" id="steal_team_val" value="' + esc(currentTeamId) + '">' +
 
     '<input type="hidden" id="steal_target_talent_id" value="' + esc(t.id) + '">' +
 
-    '<div class="actions" style="margin-top:20px; justify-content:flex-end;">' +
+    '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" data-act="saveStealDirect">✨ Steal bestätigen & Show-Weiterflug</button>' +
     '</div>';
@@ -1299,21 +1252,21 @@ function openBattleModal() {
 
     var buzzerBadgePopup = '';
     if (cs.teamCount && t.buzzers === cs.teamCount) {
-      buzzerBadgePopup = '<span class="ace-symbol" title="Alle ' + cs.teamCount + ' Buzzer (Pik As)" style="font-size:1.3rem;">♠</span>';
+      buzzerBadgePopup = '<span class="ace-symbol" title="Alle ' + cs.teamCount + ' Buzzer (Pik As)" style="font-size:1.2rem;">♠</span>';
     } else {
-      buzzerBadgePopup = '<span class="badge-box" title="Buzzer" style="font-size:0.85rem; min-width:22px; height:22px;">' + esc(t.buzzers) + '</span>';
+      buzzerBadgePopup = '<span class="badge-box" title="Buzzer" style="font-size:0.8rem; min-width:20px; height:20px;">' + esc(t.buzzers) + '</span>';
     }
 
-    listHtml += '<div style="position:relative; background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:12px;" id="battle_item_' + t.id + '">' +
-                  '<div style="position:absolute; top:12px; right:12px;">' + buzzerBadgePopup + '</div>' +
-                  '<div style="margin-bottom:4px; font-weight:800; font-size:1.1rem; color:var(--ink); padding-right:32px;">' + allStarStar + esc(t.name) + '</div>' +
-                  '<div style="margin-bottom:10px; font-size:0.85rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap;">' +
+    listHtml += '<div style="position:relative; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px; margin-bottom:10px;" id="battle_item_' + t.id + '">' +
+                  '<div style="position:absolute; top:10px; right:10px;">' + buzzerBadgePopup + '</div>' +
+                  '<div style="margin-bottom:2px; font-weight:800; font-size:1rem; color:var(--ink); padding-right:28px;">' + allStarStar + esc(t.name) + '</div>' +
+                  '<div style="margin-bottom:8px; font-size:0.8rem; color:var(--muted); display:flex; gap:8px; flex-wrap:wrap;">' +
                     '<span>🎭 ' + esc(fakeTeamInfo) + '</span>' +
                     '<span>🎤 ' + esc(realTeamInfo) + '</span>' +
                   '</div>' +
-                  '<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;">' +
-                    '<button type="button" class="status-btn ' + (isAdv ? 'primary' : 'ghost') + '" data-status="advanced" data-talid="' + t.id + '" style="font-size:0.95rem; padding:10px; font-weight:700; border-color:var(--green); color:' + (isAdv ? '#fff' : 'var(--green)') + '; background:' + (isAdv ? 'var(--green)' : 'transparent') + ';">✓ Weiter</button>' +
-                    '<button type="button" class="status-btn ' + (isElim ? 'primary' : 'ghost') + '" data-status="eliminated" data-talid="' + t.id + '" style="font-size:0.95rem; padding:10px; font-weight:700; border-color:var(--red); color:' + (isElim ? '#fff' : 'var(--red)') + '; background:' + (isElim ? 'var(--red)' : 'transparent') + ';">✕ Raus</button>' +
+                  '<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:6px;">' +
+                    '<button type="button" class="status-btn ' + (isAdv ? 'primary' : 'ghost') + '" data-status="advanced" data-talid="' + t.id + '" style="font-size:0.85rem; padding:8px; font-weight:700; border-color:var(--green); color:' + (isAdv ? '#fff' : 'var(--green)') + '; background:' + (isAdv ? 'var(--green)' : 'transparent') + ';">✓ Weiter</button>' +
+                    '<button type="button" class="status-btn ' + (isElim ? 'primary' : 'ghost') + '" data-status="eliminated" data-talid="' + t.id + '" style="font-size:0.85rem; padding:8px; font-weight:700; border-color:var(--red); color:' + (isElim ? '#fff' : 'var(--red)') + '; background:' + (isElim ? 'var(--red)' : 'transparent') + ';">✕ Raus</button>' +
                   '</div>' +
                   '<input type="hidden" id="status_val_' + t.id + '" value="' + status + '">' +
                 '</div>';
@@ -1321,51 +1274,10 @@ function openBattleModal() {
 
   dlg.innerHTML = '<h3>⚔️ Battle / Entscheidung</h3>' +
     '<p class="hint">Wähle für jedes ausgewählte Talent den Status (erneutes Klicken setzt auf Normal zurück).</p>' +
-    '<div style="max-height:360px; overflow-y:auto; margin-bottom:16px; padding-right:4px;">' + listHtml + '</div>' +
-    '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
+    '<div style="max-height:300px; overflow-y:auto; margin-bottom:14px; padding-right:4px;">' + listHtml + '</div>' +
+    '<div class="actions" style="margin-top:14px; justify-content:flex-end;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" data-act="saveBattle">Ergebnis speichern</button>' +
-    '</div>';
-
-  if (!dlg.open) dlg.showModal();
-}
-
-function openCoachStatsModal() {
-  var cs = currentSeason();
-  if (!cs) return;
-
-  var currentStage = cs.stages.find(function(st){ return st.id === ui.tab; });
-  var stageTalents = cs.talents.filter(function(t){ return t.stageId === ui.tab; });
-
-  var statsHtml = '';
-  if (!cs.realTeams || cs.realTeams.length === 0) {
-    statsHtml = '<p class="empty">Keine realen Teams in den Einstellungen definiert.</p>';
-  } else {
-    for (var i = 0; i < cs.realTeams.length; i++) {
-      var rt = cs.realTeams[i];
-      var rtTalents = stageTalents.filter(function(t){ return t.realTeamId === rt.id; });
-      var advCount = rtTalents.filter(function(t){ return t.status === 'advanced'; }).length;
-      var elimCount = rtTalents.filter(function(t){ return t.status === 'eliminated'; }).length;
-      var colorDot = '<span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:' + (rt.color || '#e62a2a') + '; margin-right:6px; vertical-align:middle;"></span>';
-
-      statsHtml += '<div style="background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-                     '<div>' +
-                       colorDot + '<b>' + esc(rt.name) + '</b> <span style="color:var(--muted); font-size:0.85rem;">(' + esc(rt.initial) + ')</span>' +
-                     '</div>' +
-                     '<div style="display:flex; gap:12px; font-weight:700; font-size:0.9rem;">' +
-                       '<span style="color:var(--ink);">Gesamt: ' + rtTalents.length + '</span>' +
-                       '<span style="color:var(--green);">🟢 Weiter: ' + advCount + '</span>' +
-                       '<span style="color:var(--red);">🔴 Raus: ' + elimCount + '</span>' +
-                     '</div>' +
-                   '</div>';
-    }
-  }
-
-  dlg.innerHTML = '<h3>📊 Statistik pro reales Team</h3>' +
-    '<p class="hint">Übersicht für den Abschnitt: <b>' + esc(currentStage ? currentStage.name : '') + '</b></p>' +
-    '<div style="max-height:360px; overflow-y:auto; margin-bottom:16px;">' + statsHtml + '</div>' +
-    '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
-      '<button class="primary" data-act="closeDlg">Schließen</button>' +
     '</div>';
 
   if (!dlg.open) dlg.showModal();
@@ -1398,7 +1310,7 @@ var A = {
     var floatingContainer = $("#floating_popup_container");
     if (ui.selectedTalents.length > 0) {
       floatingContainer.innerHTML = '<div class="floating-popup">' +
-                '<span style="background:var(--panel); border:1px solid var(--line); padding:8px 14px; border-radius:8px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
+                '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.85rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
                 '<button class="ghost sm" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
                 '<button class="primary sm" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
               '</div>';
@@ -1490,13 +1402,13 @@ var A = {
     var realTeamObj = cs.realTeams ? cs.realTeams.find(function(rt){ return rt.id === newRealId; }) : null;
     var fakeTeamObj = cs.teams.find(function(tm){ return tm.id === newTeamId; }) || {};
 
-    dlg.innerHTML = '<div style="text-align:center; padding:10px 0;">' +
-                      '<h3 style="color:var(--gold); font-size:1.4rem; margin-bottom:6px;">🔄 Steal-Deal erfolgreich!</h3>' +
+    dlg.innerHTML = '<div style="text-align:center; padding:8px 0;">' +
+                      '<h3 style="color:var(--gold); font-size:1.2rem; margin-bottom:4px;">🔄 Steal-Deal erfolgreich!</h3>' +
                       '<p class="hint"><b>' + esc(t.name) + '</b> wurde erfolgreich gerettet & global aktualisiert:</p>' +
-                      '<div class="anim-result-card" style="background:var(--panel2); border:1px solid var(--gold); border-radius:10px; padding:14px; margin-top:12px; text-align:left;">' +
-                        '<div style="font-weight:800; font-size:1.1rem; color:var(--ink); margin-bottom:4px;">⭐ ' + esc(t.name) + '</div>' +
-                        '<div style="font-size:0.9rem; color:var(--muted);">🎭 Neues Fake-Team: <b>' + esc(fakeTeamObj.name || '') + '</b></div>' +
-                        '<div style="font-size:0.9rem; color:var(--muted);">🎤 Neuer Coach: <b style="color:' + (realTeamObj ? realTeamObj.color : 'var(--gold)') + ';">' + esc(realTeamObj ? realTeamObj.name : 'Kein Coach') + '</b></div>' +
+                      '<div class="anim-result-card" style="background:var(--panel2); border:1px solid var(--gold); border-radius:10px; padding:10px; margin-top:10px; text-align:left;">' +
+                        '<div style="font-weight:800; font-size:1rem; color:var(--ink); margin-bottom:2px;">⭐ ' + esc(t.name) + '</div>' +
+                        '<div style="font-size:0.85rem; color:var(--muted);">🎭 Neues Fake-Team: <b>' + esc(fakeTeamObj.name || '') + '</b></div>' +
+                        '<div style="font-size:0.85rem; color:var(--muted);">🎤 Neuer Coach: <b style="color:' + (realTeamObj ? realTeamObj.color : 'var(--gold)') + ';">' + esc(realTeamObj ? realTeamObj.name : 'Kein Coach') + '</b></div>' +
                       '</div>' +
                     '</div>';
 
@@ -1513,7 +1425,6 @@ var A = {
   },
 
   openBattleModal: function() { openBattleModal(); return "keep"; },
-  openCoachStatsModal: function() { openCoachStatsModal(); return "keep"; },
   openStealModal: function() { openStealModal(); return "keep"; },
 
   exportJSON: function() {
@@ -1585,19 +1496,19 @@ var A = {
       var statusBadgeStyle = ut.status === 'advanced' ? 'background:rgba(46,204,113,0.2); color:var(--green); border:1px solid var(--green);' : (ut.status === 'eliminated' ? 'background:rgba(230,42,42,0.2); color:var(--red); border:1px solid var(--red);' : 'background:rgba(255,209,102,0.15); color:var(--gold); border:1px solid var(--gold);');
       var statusText = ut.status === 'advanced' ? '✓ Weiter' : (ut.status === 'eliminated' ? '✕ Raus' : '⚪ Normal');
 
-      animListHtml += '<div class="anim-result-card" style="animation-delay: ' + (k * 0.1) + 's; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">' +
+      animListHtml += '<div class="anim-result-card" style="animation-delay: ' + (k * 0.1) + 's; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">' +
                         '<div>' +
-                          '<div style="font-weight:800; font-size:1.05rem; color:var(--ink);">' + esc(ut.name) + '</div>' +
-                          '<div style="font-size:0.85rem; color:var(--muted);">🎭 ' + esc(ut.teamName) + '</div>' +
+                          '<div style="font-weight:800; font-size:0.95rem; color:var(--ink);">' + esc(ut.name) + '</div>' +
+                          '<div style="font-size:0.8rem; color:var(--muted);">🎭 ' + esc(ut.teamName) + '</div>' +
                         '</div>' +
-                        '<div style="padding:4px 12px; border-radius:6px; font-weight:700; font-size:0.9rem; ' + statusBadgeStyle + '">' + statusText + '</div>' +
+                        '<div style="padding:3px 10px; border-radius:6px; font-weight:700; font-size:0.85rem; ' + statusBadgeStyle + '">' + statusText + '</div>' +
                       '</div>';
     }
 
-    dlg.innerHTML = '<div style="text-align:center; padding:10px 0;">' +
-                      '<h3 style="color:var(--gold); font-size:1.4rem; margin-bottom:6px;">✨ Ergebnisse gespeichert!</h3>' +
+    dlg.innerHTML = '<div style="text-align:center; padding:8px 0;">' +
+                      '<h3 style="color:var(--gold); font-size:1.2rem; margin-bottom:4px;">✨ Ergebnisse gespeichert!</h3>' +
                       '<p class="hint">Übersicht der Aktualisierungen:</p>' +
-                      '<div style="max-height:280px; overflow-y:auto; text-align:left; margin-top:12px;">' + animListHtml + '</div>' +
+                      '<div style="max-height:240px; overflow-y:auto; text-align:left; margin-top:10px;">' + animListHtml + '</div>' +
                     '</div>';
 
     setTimeout(function(){
@@ -1628,11 +1539,11 @@ var A = {
     }
     save(); dlg.close(); ui.enter = true; return "render";
   },
-  delSeason: function(el) {
+  delSeasonModal: function(el) {
     var id = el.dataset.id;
     showCustomConfirm("Diese komplette Staffel inklusive aller Talents wirklich löschen?", function(){
       S.seasons = S.seasons.filter(function(s){ return s.id !== id; });
-      save(); ui.view = "home"; ui.seasonId = null; ui.enter = true; render();
+      save(); dlg.close(); ui.view = "home"; ui.seasonId = null; ui.enter = true; render();
     });
     return "keep";
   },
@@ -1774,13 +1685,11 @@ document.addEventListener("input", function(ev){
     var appHtml = seasonView(currentSeason());
     var container = $(".grid");
     if (container) {
-      // Nur den Grid-Bereich und Zähler live aktualisieren, ohne den Input-Focus zu verlieren
       var tempDiv = document.createElement('div');
       tempDiv.innerHTML = appHtml;
       var newGrid = tempDiv.querySelector('.grid');
       if (newGrid) container.outerHTML = newGrid.outerHTML;
       
-      // Statistiken in Team-Headern ebenfalls aktualisieren
       var oldHeaders = document.querySelectorAll('.team-header .talent-count-right');
       var newHeaders = tempDiv.querySelectorAll('.team-header .talent-count-right');
       for (var i = 0; i < oldHeaders.length; i++) {
