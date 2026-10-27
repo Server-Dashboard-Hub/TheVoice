@@ -331,7 +331,8 @@ function toTree() {
         name: tal.name,
         buzzers: tal.buzzers,
         realTeamId: tal.realTeamId || "",
-        status: tal.status || "active"
+        status: tal.status || "active",
+        isAllStar: tal.isAllStar ? true : false
       };
     }
     t.seasons[s.id] = seasonsObj;
@@ -384,7 +385,8 @@ function fromTree(t) {
             name: tal.name,
             buzzers: tal.buzzers,
             realTeamId: tal.realTeamId || "",
-            status: tal.status || "active"
+            status: tal.status || "active",
+            isAllStar: tal.isAllStar ? true : false
           });
         }
       }
@@ -640,6 +642,8 @@ function seasonView(cs) {
         buzzerBadge = '<span class="badge-box" title="Buzzer">' + esc(t.buzzers) + '</span>';
       }
 
+      var allStarStar = t.isAllStar ? '<span style="color:var(--gold); font-size:1.1rem; margin-right:2px;" title="All-Star (Kehrt zurück)">⭐</span>' : '';
+
       var statusClass = '';
       if (t.status === 'eliminated') statusClass = 'eliminated';
       else if (t.status === 'advanced') statusClass = 'advanced';
@@ -664,7 +668,7 @@ function seasonView(cs) {
           buzzerBadge +
           '<div class="row-content">' +
             '<div class="meta">' +
-              '<b>' + esc(t.name) + '</b>' +
+              allStarStar + '<b>' + esc(t.name) + '</b>' +
             '</div>' +
             editButtonsHtml +
           '</div>' +
@@ -676,13 +680,11 @@ function seasonView(cs) {
       talentsHtml = '<div class="empty" style="padding:10px 0">Noch keine Talents</div>';
     }
 
-    // Plus-Button für Talente nur in den Blinds (erste Runde, Index 0)
     var addBtnHtml = '';
     if (currentStageIdx === 0) {
       addBtnHtml = '<button class="ghost sm add-btn-left" data-act="addTalent" data-team="'+team.id+'" title="Talent hinzufügen">＋</button>';
     }
 
-    // Statistik pro Fake-Team erst ab Runde 2 (currentStageIdx > 0)
     var statsBadgeHtml = '';
     if (currentStageIdx > 0) {
       statsBadgeHtml = '<span style="color:var(--muted)">' + teamTalents.length + '</span>' +
@@ -856,6 +858,8 @@ function openTalentModal(teamId, editId) {
     buzzOpts += '<option value="'+i+'" '+sel+'>'+i+'</option>';
   }
 
+  var isAllStarChecked = (t && t.isAllStar) ? 'checked' : '';
+
   dlg.innerHTML = '<h3>'+(t ? 'Talent bearbeiten' : 'Neues Talent')+'</h3>' +
     '<label>Name des Talents<input id="tal_name" value="'+esc(t?t.name:"")+'" placeholder="Max Mustermann"></label>' +
     '<label>Reales Team / Coach wählen<select id="tal_real">' + realTeamOpts + '</select></label>' +
@@ -863,6 +867,10 @@ function openTalentModal(teamId, editId) {
       '<label style="flex:1">Fake-Team<select id="tal_team">' + teamOpts + '</select></label>' +
       '<label style="flex:1">Buzzer-Anzahl<select id="tal_buzz">' + buzzOpts + '</select></label>' +
     '</div>' +
+    '<label style="display:flex; flex-direction:row; align-items:center; gap:8px; cursor:pointer; margin-top:8px;">' +
+      '<input type="checkbox" id="tal_allstar" ' + isAllStarChecked + ' style="width:auto; cursor:pointer;">' +
+      '<span>⭐ All-Star (Kehrt zurück in die Show)</span>' +
+    '</label>' +
     '<div class="actions" style="margin-top:16px;">' +
       '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
       '<button class="primary" data-act="saveTalent">Speichern</button>' +
@@ -883,9 +891,10 @@ function openBattleModal() {
     var teamObj = cs.teams.find(function(tm){ return tm.id === t.teamId; }) || {};
 
     var status = t.status || 'active';
+    var allStarStar = t.isAllStar ? '⭐ ' : '';
 
     listHtml += '<div style="background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:10px;">' +
-                  '<div style="margin-bottom:8px; font-weight:700; font-size:1.05rem;">' + esc(t.name) + ' <span style="font-size:0.85rem; color:var(--muted); font-weight:normal;">(' + esc(teamObj.name || '') + ')</span></div>' +
+                  '<div style="margin-bottom:8px; font-weight:700; font-size:1.05rem;">' + allStarStar + esc(t.name) + ' <span style="font-size:0.85rem; color:var(--muted); font-weight:normal;">(' + esc(teamObj.name || '') + ')</span></div>' +
                   '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">' +
                     '<label class="status-box-label" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 8px; border-radius:8px; border:1px solid ' + (status === 'active' ? 'var(--gold)' : 'var(--line)') + '; cursor:pointer; background:' + (status === 'active' ? 'rgba(255,209,102,0.1)' : 'transparent') + '; font-size:0.9rem; margin:0; text-align:center;">' +
                       '<input type="radio" name="battle_res_' + t.id + '" value="active" ' + (status === 'active' ? 'checked' : '') + ' style="cursor:pointer;" data-status-radio="active" data-talid="' + t.id + '"> ⚪ Normal' +
@@ -925,7 +934,6 @@ function openCoachStatsModal() {
     for (var i = 0; i < cs.realTeams.length; i++) {
       var rt = cs.realTeams[i];
       var rtTalents = stageTalents.filter(function(t){ return t.realTeamId === rt.id; });
-      var activeCount = rtTalents.filter(function(t){ return !t.status || t.status === 'active'; }).length;
       var advCount = rtTalents.filter(function(t){ return t.status === 'advanced'; }).length;
       var elimCount = rtTalents.filter(function(t){ return t.status === 'eliminated'; }).length;
 
@@ -1005,7 +1013,8 @@ var A = {
             name: t.name,
             buzzers: t.buzzers,
             realTeamId: t.realTeamId,
-            status: "active"
+            status: "active",
+            isAllStar: t.isAllStar
           });
         }
       } else if ((newStatus === 'eliminated' || newStatus === 'active') && nextStage) {
@@ -1111,6 +1120,7 @@ var A = {
     var realTeamId = $("#tal_real").value;
     var teamId = $("#tal_team").value;
     var buzzers = parseInt($("#tal_buzz").value) || 1;
+    var isAllStar = $("#tal_allstar") ? $("#tal_allstar").checked : false;
     
     if(!name) { showCustomAlert("Bitte einen Namen eingeben."); return "keep"; }
 
@@ -1121,6 +1131,7 @@ var A = {
         t.teamId = teamId; 
         t.buzzers = buzzers;
         t.realTeamId = realTeamId;
+        t.isAllStar = isAllStar;
       }
     } else {
       var baseId = "tal_" + Date.now();
@@ -1131,7 +1142,8 @@ var A = {
         name: name,
         buzzers: buzzers,
         realTeamId: realTeamId,
-        status: "active"
+        status: "active",
+        isAllStar: isAllStar
       });
 
       var currentStageIdx = cs.stages.findIndex(function(st){ return st.id === ui.tab; });
@@ -1149,7 +1161,8 @@ var A = {
               name: name,
               buzzers: buzzers,
               realTeamId: realTeamId,
-              status: "active"
+              status: "active",
+              isAllStar: isAllStar
             });
           }
         }
@@ -1159,7 +1172,6 @@ var A = {
   }
 };
 
-// Event-Delegation für die klickbaren Boxen im Battle-Pop-up
 document.addEventListener("change", function(ev){
   if(ev.target.dataset.chg === "teamCount") {
     var count = parseInt(ev.target.value);
