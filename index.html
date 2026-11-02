@@ -365,30 +365,61 @@ dialog input,dialog select{width:100%}
 }
 </style>
 
-<!-- Firebase SDKs für den Google Login -->
+<!-- Firebase SDKs & E-Mail/Passwort Auth Logik -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
-    databaseURL: "https://thevoice-e515f-default-rtdb.europe-west1.firebasedatabase.app"
+    apiKey: "HIER_DEINEN_API_KEY_EINTRAGEN",
+    authDomain: "thevoice-e515f.firebaseapp.com",
+    databaseURL: "https://thevoice-e515f-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "thevoice-e515f"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
 
+  // Globales Öffnen des Login-Dialogs oder Abmelden
   window.handleAuthClick = function() {
     if (auth.currentUser) {
       signOut(auth).then(() => {
         showCustomAlert("Erfolgreich abgemeldet.");
       });
     } else {
-      signInWithPopup(auth, provider).catch((error) => {
-        showCustomAlert("Login fehlgeschlagen: " + error.message);
-      });
+      openLoginModal();
     }
   };
+
+  // E-Mail / Passwort Login ausführen
+  window.executeEmailLogin = function() {
+    const email = document.getElementById("login_email").value.trim();
+    const pass = document.getElementById("login_pass").value.trim();
+    if (!email || !pass) {
+      showCustomAlert("Bitte E-Mail und Passwort eingeben.");
+      return;
+    }
+    signInWithEmailAndPassword(auth, email, pass)
+      .then(() => {
+        dlg.close();
+        showCustomAlert("Erfolgreich als Admin angemeldet!");
+      })
+      .catch((error) => {
+        showCustomAlert("Login fehlgeschlagen: " + error.message);
+      });
+  };
+
+  function openLoginModal() {
+    dlg.innerHTML = '<h3>🔐 Admin Login</h3>' +
+      '<p class="hint">Gib deine Admin-Zugangsdaten ein.</p>' +
+      '<label>E-Mail-Adresse<input type="email" id="login_email" placeholder="admin@example.com"></label>' +
+      '<label>Passwort<input type="password" id="login_pass" placeholder="••••••••"></label>' +
+      '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
+        '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
+        '<button class="primary" onclick="executeEmailLogin()">Einloggen</button>' +
+      '</div>';
+    if (!dlg.open) dlg.showModal();
+  }
 
   onAuthStateChanged(auth, (user) => {
     const authBtn = document.getElementById("auth_btn");
