@@ -42,7 +42,6 @@ body::before {
   100% { transform: translateY(25px) scale(0.96); }
 }
 
-/* Smootherer, längerer Seitenübergang */
 #app { transition: opacity 0.5s ease; }
 #app.enter { animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes popIn {
@@ -294,7 +293,6 @@ h3{font-family:var(--display);margin:0 0 8px}
 .meta{ display:flex; align-items: center; justify-content: center; gap: 6px; text-align: center; width: 100%; }
 .meta b{font-size:1.1rem; font-weight: 800; font-family: var(--body); color: var(--ink); line-height: 1.15;}
 
-/* Statische Buzzer-Box (kein Pulsieren mehr hier) */
 .badge-box {
   background: linear-gradient(135deg, #ffcd3c, #f5a623);
   color: #000;
@@ -314,7 +312,6 @@ h3{font-family:var(--display);margin:0 0 8px}
   pointer-events: none;
 }
 
-/* Ausschließlich das Pik As pulsiert majestätisch */
 .ace-symbol {
   font-size: 1.35rem;
   color: var(--gold);
@@ -384,7 +381,6 @@ dialog input,dialog select{width:100%}
 
 .header-actions { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; padding: 0 8px; }
 
-/* Noch smootheres, längeres Einfliegen der Ergebnis-Karten */
 @keyframes resultCardPop {
   0% { opacity: 0; transform: scale(0.8) translateY(20px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
@@ -393,12 +389,84 @@ dialog input,dialog select{width:100%}
   animation: resultCardPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 </style>
+
+<!-- Firebase Auth & Cloud Sync Integration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBxUuFEAbrYW3PLnhYaHgSjwUIPvI2hMus",
+    authDomain: "thevoice-e515f.firebaseapp.com",
+    databaseURL: "https://thevoice-e515f-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "thevoice-e515f",
+    storageBucket: "thevoice-e515f.firebasestorage.app",
+    messagingSenderId: "52048471580",
+    appId: "1:52048471580:web:24655f62b3897db1fd21d9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.handleAuthClick = function() {
+    if (auth.currentUser) {
+      signOut(auth).then(() => {
+        showCustomAlert("Erfolgreich abgemeldet.");
+      });
+    } else {
+      openLoginModal();
+    }
+  };
+
+  window.executeEmailLogin = function() {
+    const email = document.getElementById("login_email").value.trim();
+    const pass = document.getElementById("login_pass").value.trim();
+    if (!email || !pass) {
+      showCustomAlert("Bitte E-Mail und Passwort eingeben.");
+      return;
+    }
+    signInWithEmailAndPassword(auth, email, pass)
+      .then(() => {
+        dlg.close();
+        showCustomAlert("Erfolgreich als Admin angemeldet!");
+      })
+      .catch((error) => {
+        showCustomAlert("Login fehlgeschlagen: " + error.message);
+      });
+  };
+
+  function openLoginModal() {
+    dlg.innerHTML = '<h3>🔐 Admin Login</h3>' +
+      '<p class="hint">Gib deine Admin-Zugangsdaten ein.</p>' +
+      '<label>E-Mail-Adresse<input type="email" id="login_email" placeholder="admin@example.com"></label>' +
+      '<label>Passwort<input type="password" id="login_pass" placeholder="••••••••"></label>' +
+      '<div class="actions" style="margin-top:16px; justify-content:flex-end;">' +
+        '<button class="ghost" data-act="closeDlg">Abbrechen</button>' +
+        '<button class="primary" onclick="executeEmailLogin()">Einloggen</button>' +
+      '</div>';
+    if (!dlg.open) dlg.showModal();
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    const authBtn = document.getElementById("auth_btn");
+    if (authBtn) {
+      if (user) {
+        authBtn.textContent = "🔓 Abmelden (" + user.email.split('@')[0] + ")";
+        authBtn.className = "ghost sm";
+      } else {
+        authBtn.textContent = "🔐 Admin Login";
+        authBtn.className = "primary sm";
+      }
+    }
+  });
+</script>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="brand" data-act="goHome">🎙️ THE VOICE</div>
     <div class="who">
+      <button id="auth_btn" class="primary sm" onclick="handleAuthClick()">🔐 Admin Login</button>
       <span id="net" class="net"></span>
       <div id="header_tools" style="display:flex; gap:10px; align-items:center;"></div>
     </div>
