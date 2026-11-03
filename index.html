@@ -25,6 +25,12 @@ body{
   position: relative;
 }
 
+/* GPU-Beschleunigung gegen Ruckeln */
+body::before, #app.enter, .card, .row, .floating-popup, dialog, .ace-symbol, .row.stealable {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -37,16 +43,16 @@ body::before {
   animation: bgFloat 18s ease-in-out infinite alternate;
 }
 @keyframes bgFloat {
-  0% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-30px) scale(1.05); }
-  100% { transform: translateY(25px) scale(0.96); }
+  0% { transform: translateY(0px) scale(1) translateZ(0); }
+  50% { transform: translateY(-30px) scale(1.05) translateZ(0); }
+  100% { transform: translateY(25px) scale(0.96) translateZ(0); }
 }
 
 #app { transition: opacity 0.5s ease; }
 #app.enter { animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes popIn {
-  0% { opacity: 0; transform: translateY(20px) scale(0.96); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  0% { opacity: 0; transform: translateY(20px) scale(0.96) translateZ(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1) translateZ(0); }
 }
 
 .wrap{max-width:100%;margin:0 auto;padding:0 16px 80px}
@@ -60,7 +66,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;fl
 .who{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.9rem}
 .net{font-size:.8rem}
 
-select,input{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:100%; transition: all 0.3s ease;}
+select,input{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:100%; transition: border-color 0.2s ease, box-shadow 0.2s ease;}
 select:focus,input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-color:var(--gold); box-shadow: 0 0 12px rgba(255,209,102,0.35);}
 
 input[type=number]::-webkit-inner-spin-button,
@@ -69,10 +75,10 @@ input[type=number] { -moz-appearance: textfield; }
 
 button{
   font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:8px 16px; font-weight: 600;
-  transition:transform .3s cubic-bezier(0.16, 1, 0.3, 1),box-shadow .3s ease,filter .3s ease,background-color .3s ease,opacity .3s ease,border-color .3s ease;
+  transition:transform .2s cubic-bezier(0.16, 1, 0.3, 1),box-shadow .2s ease,background-color .2s ease,border-color .2s ease;
 }
-button:hover:not(:disabled){transform:translateY(-2.5px);box-shadow:0 8px 20px rgba(230,42,42,0.25); border-color: rgba(230,42,42,0.5);}
-button:active:not(:disabled){transform:scale(0.92);box-shadow:none}
+button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(230,42,42,0.25); border-color: rgba(230,42,42,0.5);}
+button:active:not(:disabled){transform:scale(0.95);box-shadow:none}
 
 button.primary{
   background: linear-gradient(135deg, #ff4d4d, #e62a2a);
@@ -103,10 +109,10 @@ h3{font-family:var(--display);margin:0 0 8px}
 .card{
   background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px; 
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
 }
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   box-shadow: 0 15px 35px rgba(230,42,42,0.2);
   border-color: rgba(230,42,42,0.45);
 }
@@ -114,8 +120,8 @@ h3{font-family:var(--display);margin:0 0 8px}
 .card.team-type-even { background: linear-gradient(140deg, rgba(36, 12, 10, 0.95), rgba(20, 6, 5, 0.95)); border-color: rgba(255, 107, 107, 0.35); }
 
 .season-card { cursor:pointer; display:flex; flex-direction:column; gap:6px; padding:22px; min-height:130px; justify-content:center; }
-.season-card:hover { transform:translateY(-6px) scale(1.01); box-shadow:0 16px 32px rgba(230,42,42,0.3); border-color:var(--red); }
-.season-card:active { transform:scale(0.96); }
+.season-card:hover { transform:translateY(-5px) scale(1.01); box-shadow:0 16px 32px rgba(230,42,42,0.3); border-color:var(--red); }
+.season-card:active { transform:scale(0.97); }
 .season-card .s-title { font-family:var(--display); font-size:1.7rem; font-weight:800; color:var(--ink); line-height:1.1; }
 .season-card .s-meta { color:var(--muted); font-size:0.9rem; }
 .season-card .s-winner { margin-top:6px; display:inline-block; padding:3px 10px; background:rgba(255,209,102,0.12); color:var(--gold); border:1px solid rgba(255,209,102,0.35); border-radius:6px; font-weight:700; font-size:0.8rem;}
@@ -138,7 +144,7 @@ h3{font-family:var(--display);margin:0 0 8px}
   position: absolute;
   left: 0;
   opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.2s ease;
   padding: 4px 8px;
   font-size: 0.85rem;
 }
@@ -215,7 +221,7 @@ h3{font-family:var(--display);margin:0 0 8px}
   color: var(--muted);
   box-shadow: none !important;
   transform: none !important;
-  transition: color 0.3s ease, background 0.3s ease;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 .view-switch button.active {
   background: linear-gradient(135deg, #ff4d4d, #e62a2a);
@@ -225,8 +231,8 @@ h3{font-family:var(--display);margin:0 0 8px}
 }
 
 @keyframes buzzIn { 
-  0% { opacity: 0; transform: translateY(14px) scale(0.94); } 
-  100% { opacity: 1; transform: translateY(0) scale(1); } 
+  0% { opacity: 0; transform: translateY(14px) scale(0.94) translateZ(0); } 
+  100% { opacity: 1; transform: translateY(0) scale(1) translateZ(0); } 
 }
 
 .row{
@@ -239,9 +245,9 @@ h3{font-family:var(--display);margin:0 0 8px}
   border-radius: 10px;
   padding: 6px 10px;
   align-items: center;
-  animation: buzzIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: buzzIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   margin-bottom: 6px;
-  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
   user-select: none;
 }
 
@@ -280,13 +286,13 @@ h3{font-family:var(--display);margin:0 0 8px}
 }
 
 @keyframes highlightPulse {
-  0% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
-  30% { transform: scale(1.025); box-shadow: 0 0 22px var(--gold); border-color: var(--gold); background: rgba(255,209,102,0.28); }
-  70% { transform: scale(1.025); box-shadow: 0 0 22px var(--gold); border-color: var(--gold); background: rgba(255,209,102,0.28); }
-  100% { transform: scale(1); box-shadow: 0 0 0px var(--gold); }
+  0% { transform: scale(1) translateZ(0); box-shadow: 0 0 0px var(--gold); }
+  30% { transform: scale(1.02) translateZ(0); box-shadow: 0 0 22px var(--gold); border-color: var(--gold); background: rgba(255,209,102,0.28); }
+  70% { transform: scale(1.02) translateZ(0); box-shadow: 0 0 22px var(--gold); border-color: var(--gold); background: rgba(255,209,102,0.28); }
+  100% { transform: scale(1) translateZ(0); box-shadow: 0 0 0px var(--gold); }
 }
 .row.recently-updated {
-  animation: highlightPulse 4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: highlightPulse 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .row-content{ display:flex; flex-direction:column; gap:1px; align-items:center; justify-content:center; width:100%; }
@@ -326,8 +332,8 @@ h3{font-family:var(--display);margin:0 0 8px}
   animation: aceGlow 2.4s infinite alternate ease-in-out;
 }
 @keyframes aceGlow {
-  0% { transform: scale(1) rotate(-3deg); text-shadow: 0 0 8px rgba(255,209,102,0.5); }
-  100% { transform: scale(1.15) rotate(3deg); text-shadow: 0 0 24px rgba(255,209,102,0.95); }
+  0% { transform: scale(1) rotate(-3deg) translateZ(0); text-shadow: 0 0 8px rgba(255,209,102,0.5); }
+  100% { transform: scale(1.1) rotate(3deg) translateZ(0); text-shadow: 0 0 24px rgba(255,209,102,0.95); }
 }
 
 .floating-popup {
@@ -345,11 +351,11 @@ h3{font-family:var(--display);margin:0 0 8px}
   align-items: center;
   gap: 14px;
   z-index: 1000;
-  animation: slideUpPopup 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUpPopup 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes slideUpPopup {
-  from { opacity: 0; transform: translate(-50%, 30px) scale(0.94); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  from { opacity: 0; transform: translate(-50%, 30px) scale(0.94) translateZ(0); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1) translateZ(0); }
 }
 
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
@@ -361,13 +367,13 @@ dialog{
   border-radius:20px;
   padding:22px;
   width:min(500px,92vw);
-  animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-shadow: 0 24px 60px rgba(0,0,0,0.85), 0 0 35px rgba(230,42,42,0.25);
 }
-dialog::backdrop{background:rgba(5,2,5,.88);backdrop-filter:blur(10px);animation:fadeIn .4s ease}
+dialog::backdrop{background:rgba(5,2,5,.88);backdrop-filter:blur(10px);animation:fadeIn .3s ease}
 @keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.85) translateY(25px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: scale(0.88) translateY(20px) translateZ(0); }
+  to { opacity: 1; transform: scale(1) translateY(0) translateZ(0); }
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
@@ -382,18 +388,19 @@ dialog input,dialog select{width:100%}
 .header-actions { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; padding: 0 8px; }
 
 @keyframes resultCardPop {
-  0% { opacity: 0; transform: scale(0.8) translateY(20px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+  0% { opacity: 0; transform: scale(0.85) translateY(15px) translateZ(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0) translateZ(0); }
 }
 .anim-result-card {
-  animation: resultCardPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: resultCardPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 </style>
 
-<!-- Firebase Auth & Cloud Sync Integration -->
+<!-- Firebase Auth & Cloud Sync Integration (WebSockets für echtes Null-Ruckeln) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBxUuFEAbrYW3PLnhYaHgSjwUIPvI2hMus",
@@ -407,8 +414,8 @@ dialog input,dialog select{width:100%}
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getDatabase(app);
 
-  // Globaler Auth-Status für das Hauptskript
   window.isUserLoggedIn = false;
 
   window.handleAuthClick = function() {
@@ -452,7 +459,7 @@ dialog input,dialog select{width:100%}
 
   onAuthStateChanged(auth, (user) => {
     const authBtn = document.getElementById("auth_btn");
-    window.isUserLoggedIn = !!user; // true wenn eingeloggt, sonst false
+    window.isUserLoggedIn = !!user;
     
     if (authBtn) {
       if (user) {
@@ -461,13 +468,35 @@ dialog input,dialog select{width:100%}
       } else {
         authBtn.textContent = "🔐 Admin Login";
         authBtn.className = "primary sm";
-        // Falls man im Edit-Modus war und sich abmeldet, Edit-Modus direkt beenden
         if (typeof ui !== 'undefined' && ui.editMode) {
           ui.editMode = false;
           if (typeof render === 'function') render();
         }
       }
     }
+  });
+
+  // Echtes WebSocket Push-Prinzip (Kein setInterval mehr nötig!)
+  const dbRef = ref(db, '/');
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    window.net = "online";
+    if (data) {
+      var f = flat(data);
+      if (!same(f, lastFlat)) {
+        var a = document.activeElement;
+        if (!(dlg.open || (a && /INPUT|SELECT|TEXTAREA/.test(a.tagName)))) {
+          S = fromTree(data);
+          lastFlat = f;
+          try { localStorage.setItem("voice-setup-db", JSON.stringify(S)); } catch(e) {}
+          render();
+        }
+      }
+    }
+    badge();
+  }, (error) => {
+    window.net = "error";
+    badge();
   });
 </script>
 </head>
@@ -488,7 +517,7 @@ dialog input,dialog select{width:100%}
 
 <script>
 var DB = "https://thevoice-e515f-default-rtdb.europe-west1.firebasedatabase.app".replace(/\/+$/,"");
-var lastFlat = {}, busy = 0, net = DB ? "connecting" : "local";
+var lastFlat = {}, busy = 0, net = "connecting";
 var netText = function(){ return {local:"Lokal",connecting:"Verbindet…",online:"● Geteilt",error:"Offline"}[net]; };
 var badge = function(){ var n = $("#net"); if(n) n.textContent = netText(); };
 
@@ -516,7 +545,6 @@ var ui = {
 var $ = function(s) { return document.querySelector(s); };
 var esc = function(s) { return String(s ? s : "").replace(/[&<>"']/g, function(c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
 
-// Sicherheits-Prüfung vor jeder Schreib- / Admin-Aktion
 function checkAuthGuard() {
   if (!window.isUserLoggedIn) {
     showCustomAlert("Aktion verweigert! Du musst dich zuerst oben rechts über 'Admin Login' anmelden, um Änderungen vornehmen zu können.");
@@ -661,21 +689,6 @@ function push(){
   fetch(DB+"/.json",{method:"PATCH",body:JSON.stringify(p)}).then(function(r){if(!r.ok)throw 0;net="online";}).catch(function(){lastFlat=prev;net="error";}).finally(function(){busy--;badge();});
 }
 
-function pull(first){
-  if(!DB||busy)return;
-  fetch(DB+"/.json").then(function(res){return res.json();}).then(function(t){
-    net="online";
-    if(!t){if(first===true && window.isUserLoggedIn)push();badge();return;}
-    var f=flat(t);
-    if(same(f,lastFlat)){badge();return;}
-    var a=document.activeElement;
-    if(first!==true&&(dlg.open||(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))))return;
-    S=fromTree(t);lastFlat=f;
-    try{localStorage.setItem("voice-setup-db",JSON.stringify(S));}catch(e){}
-    render();
-  }).catch(function(){net="error";badge();});
-}
-
 try {
   var localData = JSON.parse(localStorage.getItem("voice-setup-db"));
   if (localData && localData.seasons) S = localData;
@@ -744,67 +757,67 @@ function showCustomConfirm(msg, onConfirm) {
 }
 
 function render() {
-  if (ui.enter) {
-    var app = $("#app");
-    app.classList.remove("enter"); 
-    void app.offsetWidth; 
-    app.classList.add("enter");
-  }
-  ui.enter = false;
-  badge();
-  
-  var floatingContainer = $("#floating_popup_container");
-  var cs = currentSeason();
-  var currentStageIdx = (cs && ui.tab) ? cs.stages.findIndex(function(st){ return st.id === ui.tab; }) : -1;
-
-  if (ui.view === "home") {
-    ui.editMode = false;
-    ui.selectedTalents = [];
-    ui.stealModeActive = false;
-    ui.searchQuery = "";
-    
-    // Nur bei Login neue Staffeln anlegen Button anzeigen
-    var newSeasonBtnHtml = window.isUserLoggedIn ? '<button class="primary" data-act="openSeasonModal" style="font-size:1.05rem; padding:10px 20px">＋ Neue Staffel</button>' : '';
-    
-    $("#header_tools").innerHTML = '';
-    $("#app").innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:0 8px;">' +
-                          '<h1 class="hero" style="margin:20px 0">Alle Staffeln</h1>' +
-                          newSeasonBtnHtml +
-                          '</div>' + renderHomeCards();
-    if (floatingContainer) floatingContainer.innerHTML = '';
-  } else if (ui.view === "season") {
-    if (!cs) { ui.view = "home"; render(); return; }
-    if (!ui.tab && cs.stages.length > 0) ui.tab = cs.stages[0].id;
-    
-    var editBtnClass = ui.editMode ? "primary" : "ghost";
-    var stealBtnClass = ui.stealModeActive ? "primary" : "ghost";
-    var stealHeaderBtn = (currentStageIdx > 0 && window.isUserLoggedIn) ? '<button class="'+stealBtnClass+'" data-act="toggleStealMode" style="border-color:var(--gold); color:'+(ui.stealModeActive?'#fff':'var(--gold)' )+';">🔄 Steal-Deal ' + (ui.stealModeActive ? '(Aktiv - Wähle Raus-Talent)' : '') + '</button>' : '';
-    
-    // Admin-Buttons nur anzeigen wenn eingeloggt
-    var adminToolsHtml = window.isUserLoggedIn ? (
-      stealHeaderBtn +
-      '<button class="'+editBtnClass+'" data-act="toggleEditMode">✏️ Edit Mode</button>' +
-      '<button class="ghost" data-act="openSettings" style="border-color:var(--line)">⚙️ Einstellungen</button>'
-    ) : '';
-
-    $("#header_tools").innerHTML = adminToolsHtml;
-    $("#app").innerHTML = seasonView(cs);
-
-    if (currentStageIdx > 0 && ui.selectedTalents.length > 0 && !ui.stealModeActive && window.isUserLoggedIn) {
-      floatingContainer.innerHTML = '<div class="floating-popup">' +
-                '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
-                '<button class="ghost" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
-                '<button class="primary" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
-              '</div>';
-    } else if (ui.stealModeActive) {
-      floatingContainer.innerHTML = '<div class="floating-popup" style="background:var(--panel); border:1px solid var(--gold); padding:10px 16px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.6);">' +
-                '<span style="color:var(--gold); font-weight:700; font-size:0.95rem;">🔄 Klicke auf ein ausgeschiedenes Talent, um den Steal-Deal zu starten!</span>' +
-                '<button class="ghost" style="background:var(--panel2); border-color:var(--line);" data-act="toggleStealMode">Abbrechen</button>' +
-              '</div>';
-    } else {
-      if (floatingContainer) floatingContainer.innerHTML = '';
+  window.requestAnimationFrame(function() {
+    if (ui.enter) {
+      var app = $("#app");
+      app.classList.remove("enter"); 
+      void app.offsetWidth; 
+      app.classList.add("enter");
     }
-  }
+    ui.enter = false;
+    badge();
+    
+    var floatingContainer = $("#floating_popup_container");
+    var cs = currentSeason();
+    var currentStageIdx = (cs && ui.tab) ? cs.stages.findIndex(function(st){ return st.id === ui.tab; }) : -1;
+
+    if (ui.view === "home") {
+      ui.editMode = false;
+      ui.selectedTalents = [];
+      ui.stealModeActive = false;
+      ui.searchQuery = "";
+      
+      var newSeasonBtnHtml = window.isUserLoggedIn ? '<button class="primary" data-act="openSeasonModal" style="font-size:1.05rem; padding:10px 20px">＋ Neue Staffel</button>' : '';
+      
+      $("#header_tools").innerHTML = '';
+      $("#app").innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:0 8px;">' +
+                            '<h1 class="hero" style="margin:20px 0">Alle Staffeln</h1>' +
+                            newSeasonBtnHtml +
+                            '</div>' + renderHomeCards();
+      if (floatingContainer) floatingContainer.innerHTML = '';
+    } else if (ui.view === "season") {
+      if (!cs) { ui.view = "home"; render(); return; }
+      if (!ui.tab && cs.stages.length > 0) ui.tab = cs.stages[0].id;
+      
+      var editBtnClass = ui.editMode ? "primary" : "ghost";
+      var stealBtnClass = ui.stealModeActive ? "primary" : "ghost";
+      var stealHeaderBtn = (currentStageIdx > 0 && window.isUserLoggedIn) ? '<button class="'+stealBtnClass+'" data-act="toggleStealMode" style="border-color:var(--gold); color:'+(ui.stealModeActive?'#fff':'var(--gold)' )+';">🔄 Steal-Deal ' + (ui.stealModeActive ? '(Aktiv - Wähle Raus-Talent)' : '') + '</button>' : '';
+      
+      var adminToolsHtml = window.isUserLoggedIn ? (
+        stealHeaderBtn +
+        '<button class="'+editBtnClass+'" data-act="toggleEditMode">✏️ Edit Mode</button>' +
+        '<button class="ghost" data-act="openSettings" style="border-color:var(--line)">⚙️ Einstellungen</button>'
+      ) : '';
+
+      $("#header_tools").innerHTML = adminToolsHtml;
+      $("#app").innerHTML = seasonView(cs);
+
+      if (currentStageIdx > 0 && ui.selectedTalents.length > 0 && !ui.stealModeActive && window.isUserLoggedIn) {
+        floatingContainer.innerHTML = '<div class="floating-popup">' +
+                  '<span style="background:var(--panel); border:1px solid var(--line); padding:6px 12px; border-radius:10px; font-size:0.9rem;"><b>' + ui.selectedTalents.length + '</b> Talente ausgewählt</span>' +
+                  '<button class="ghost" style="background:var(--panel); border-color:var(--line);" data-act="clearSelection">Auswahl aufheben</button>' +
+                  '<button class="primary" data-act="openBattleModal">⚔️ Battle / Entscheidung durchführen</button>' +
+                '</div>';
+      } else if (ui.stealModeActive) {
+        floatingContainer.innerHTML = '<div class="floating-popup" style="background:var(--panel); border:1px solid var(--gold); padding:10px 16px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.6);">' +
+                  '<span style="color:var(--gold); font-weight:700; font-size:0.95rem;">🔄 Klicke auf ein ausgeschiedenes Talent, um den Steal-Deal zu starten!</span>' +
+                  '<button class="ghost" style="background:var(--panel2); border-color:var(--line);" data-act="toggleStealMode">Abbrechen</button>' +
+                '</div>';
+      } else {
+        if (floatingContainer) floatingContainer.innerHTML = '';
+      }
+    }
+  });
 }
 
 function renderHomeCards() {
@@ -2008,7 +2021,6 @@ document.addEventListener("click", function(ev) {
 });
 
 render();
-if(DB){ pull(true); setInterval(pull, 4000); }
 </script>
 </body>
 </html>
