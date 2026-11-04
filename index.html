@@ -396,11 +396,11 @@ dialog input,dialog select{width:100%}
 }
 </style>
 
-<!-- Firebase Auth & Cloud Sync Integration (WebSockets für echtes Null-Ruckeln) -->
+<!-- Firebase Auth & Cloud Sync Integration -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBxUuFEAbrYW3PLnhYaHgSjwUIPvI2hMus",
@@ -417,6 +417,12 @@ dialog input,dialog select{width:100%}
   const db = getDatabase(app);
 
   window.isUserLoggedIn = false;
+
+  // Authentifizierte WebSocket-Push-Methode über das SDK
+  window.firebasePushUpdates = function(patchObj) {
+    const dbRef = ref(db, '/');
+    return update(dbRef, patchObj);
+  };
 
   window.handleAuthClick = function() {
     if (auth.currentUser) {
@@ -476,7 +482,7 @@ dialog input,dialog select{width:100%}
     }
   });
 
-  // Echtes WebSocket Push-Prinzip (Kein setInterval mehr nötig!)
+  // WebSocket Push-Prinzip (Live Synchronisation)
   const dbRef = ref(db, '/');
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
@@ -516,7 +522,6 @@ dialog input,dialog select{width:100%}
 <dialog id="dlg"></dialog>
 
 <script>
-var DB = "https://thevoice-e515f-default-rtdb.europe-west1.firebasedatabase.app".replace(/\/+$/,"");
 var lastFlat = {}, busy = 0, net = "connecting";
 var netText = function(){ return {local:"Lokal",connecting:"Verbindet…",online:"● Geteilt",error:"Offline"}[net]; };
 var badge = function(){ var n = $("#net"); if(n) n.textContent = netText(); };
@@ -680,13 +685,29 @@ function same(a,b){
 }
 
 function push(){
-  if(!DB || !window.isUserLoggedIn)return;
-  var cur=flat(toTree()),p={};
-  for(var k in cur)if(cur[k]!==lastFlat[k])p[k]=cur[k];
-  for(var k in lastFlat)if(!(k in cur))p[k]=null;
-  if(!Object.keys(p).length)return;
-  var prev=lastFlat;lastFlat=cur;busy++;
-  fetch(DB+"/.json",{method:"PATCH",body:JSON.stringify(p)}).then(function(r){if(!r.ok)throw 0;net="online";}).catch(function(){lastFlat=prev;net="error";}).finally(function(){busy--;badge();});
+  if(!window.isUserLoggedIn || !window.firebasePushUpdates) return;
+  var cur = flat(toTree()), p = {};
+  for(var k in cur) if(cur[k] !== lastFlat[k]) p[k] = cur[k];
+  for(var k in lastFlat) if(!(k in cur)) p[k] = null;
+  if(!Object.keys(p).length) return;
+  
+  var prev = lastFlat;
+  lastFlat = cur;
+  busy++;
+
+  window.firebasePushUpdates(p)
+    .then(function(){
+      net = "online";
+    })
+    .catch(function(err){
+      console.error("Firebase Update Fehler:", err);
+      lastFlat = prev;
+      net = "error";
+    })
+    .finally(function(){
+      busy--;
+      badge();
+    });
 }
 
 try {
